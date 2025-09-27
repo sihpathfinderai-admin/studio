@@ -51,7 +51,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/stream',
-    label: 'Streams',
+    label: 'Stream Suggestion',
     icon: Network,
     roles: ['student'],
   },

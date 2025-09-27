@@ -62,11 +62,11 @@ const StudentDashboardInternal = () => {
       cta: "Complete Profile",
     },
     {
-      title: "Explore Streams",
+      title: "Stream Suggestion",
       description: "Discover educational streams that fit you.",
       icon: <BookCopy className="h-6 w-6 text-primary" />,
       link: createLink("/stream"),
-      cta: "Explore Streams",
+      cta: "Get Suggestions",
     },
     {
         title: "Find Degrees",

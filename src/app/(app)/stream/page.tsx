@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function StreamPage() {
   return (
     <div>
-      <h1 className="text-3xl font-bold font-headline mb-4">Stream Recommendations</h1>
+      <h1 className="text-3xl font-bold font-headline mb-4">Stream Suggestion</h1>
       <Card>
         <CardHeader>
             <CardTitle>Recommended Streams</CardTitle>
