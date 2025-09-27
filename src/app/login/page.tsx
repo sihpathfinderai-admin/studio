@@ -4,14 +4,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, ArrowLeft, Eye, EyeOff, User, Shield, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { GraduationCap, ArrowLeft, Eye, EyeOff, User, Shield, ShieldAlert, CheckCircle2, Mail } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { signInWithEmail } from "@/lib/auth";
+import { signInWithEmail, sendPasswordReset } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 
 const LoginForm = ({ role, onBack }) => {
   const router = useRouter();
@@ -21,6 +22,10 @@ const LoginForm = ({ role, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ title: string; message: string } | null>(null);
   const [successInfo, setSuccessInfo] = useState<{ role: 'admin' | 'student' } | null>(null);
+
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetDialog, setResetDialog] = useState<{ open: boolean; state: 'idle' | 'loading' | 'success' | 'error', message?: string}>({ open: false, state: 'idle' });
+
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -38,6 +43,16 @@ const LoginForm = ({ role, onBack }) => {
     }
   };
   
+  const handlePasswordReset = async () => {
+    setResetDialog(prev => ({ ...prev, state: 'loading' }));
+    const { error } = await sendPasswordReset(resetEmail);
+    if (error) {
+        setResetDialog(prev => ({ ...prev, state: 'error', message: error.message }));
+    } else {
+        setResetDialog(prev => ({ ...prev, state: 'success', message: 'A password reset link has been sent to your email.' }));
+    }
+  }
+
   const closeSuccessDialogAndRedirect = () => {
     if (successInfo) {
       if (successInfo.role === 'admin') {
@@ -72,7 +87,7 @@ const LoginForm = ({ role, onBack }) => {
             <CheckCircle2 className="w-12 h-12 text-primary" />
             <AlertDialogTitle className="text-2xl">Sign In Successful</AlertDialogTitle>
             <AlertDialogDescription>
-              Welcome back! Redirecting you to the {successInfo?.role} dashboard.
+             Welcome back! Redirecting you to the {successInfo?.role} dashboard.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -82,6 +97,41 @@ const LoginForm = ({ role, onBack }) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      <Dialog open={resetDialog.open} onOpenChange={(open) => setResetDialog({ open, state: 'idle'})}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Reset Password</DialogTitle>
+                <DialogDescription>
+                    Enter your email address and we'll send you a link to reset your password.
+                </DialogDescription>
+            </DialogHeader>
+            {resetDialog.state === 'success' || resetDialog.state === 'error' ? (
+                 <div className="flex flex-col items-center text-center gap-4 p-4">
+                    {resetDialog.state === 'success' ? <CheckCircle2 className="w-12 h-12 text-primary"/> : <ShieldAlert className="w-12 h-12 text-destructive"/>}
+                    <p>{resetDialog.message}</p>
+                    <Button onClick={() => setResetDialog({ open: false, state: 'idle' })} className="w-full">Close</Button>
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="reset-email">Email</Label>
+                        <Input 
+                            id="reset-email" 
+                            type="email" 
+                            placeholder="you@example.com" 
+                            value={resetEmail} 
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            disabled={resetDialog.state === 'loading'}
+                        />
+                    </div>
+                    <Button onClick={handlePasswordReset} className="w-full" disabled={resetDialog.state === 'loading'}>
+                        {resetDialog.state === 'loading' ? 'Sending...' : 'Send Reset Link'}
+                    </Button>
+                </div>
+            )}
+        </DialogContent>
+      </Dialog>
 
       <form onSubmit={handleSignIn} className="space-y-4">
         <div className="space-y-2">
@@ -99,9 +149,14 @@ const LoginForm = ({ role, onBack }) => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-            <Link href="#" className="text-xs text-primary hover:underline">
-              Forgot password?
-            </Link>
+             <Button
+                type="button"
+                variant="link"
+                className="p-0 h-auto text-xs text-primary hover:underline"
+                onClick={() => setResetDialog({ open: true, state: 'idle' })}
+            >
+                Forgot password?
+            </Button>
           </div>
           <div className="relative">
             <Input 

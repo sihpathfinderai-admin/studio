@@ -1,8 +1,10 @@
 
+
 'use client';
 
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
@@ -76,6 +78,15 @@ export async function signInWithEmail(email, password, role) {
 export async function signOutFromApp() {
   try {
     await signOut(auth);
+    return { error: null };
+  } catch (error) {
+    return { error };
+  }
+}
+
+export async function sendPasswordReset(email) {
+  try {
+    await sendPasswordResetEmail(auth, email);
     return { error: null };
   } catch (error) {
     return { error };
