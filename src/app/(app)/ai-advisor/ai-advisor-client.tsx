@@ -1,12 +1,12 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect } from "react";
+import { useFormStatus } from "react-dom";
 import { getSuggestions, type FormState } from "./actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Bot, Library, GraduationCap, Network, Building, Loader2 } from "lucide-react";
 
@@ -62,7 +62,7 @@ function ResultsDisplay({ data }: { data: FormState['data'] }) {
 export function AiAdvisorClient() {
   const { toast } = useToast();
   const initialState: FormState = { message: "" };
-  const [state, formAction] = useFormState(getSuggestions, initialState);
+  const [state, formAction] = useActionState(getSuggestions, initialState);
 
   useEffect(() => {
     if (state.message && state.message !== "success") {
