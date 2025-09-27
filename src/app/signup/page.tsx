@@ -29,6 +29,7 @@ export default function SignupPage() {
         description: error.message,
       });
     } else {
+      // You can add the full name to the user's profile here if needed
       router.push('/dashboard?role=student');
     }
   };
