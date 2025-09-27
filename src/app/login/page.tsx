@@ -110,12 +110,6 @@ const RoleSelector = ({ onSelectRole }) => (
         <Shield className="mr-4 h-6 w-6"/>
         I am an Admin
     </Button>
-     <p className="mt-4 text-center text-sm text-muted-foreground">
-        Don't have an account?{" "}
-        <Link href="/signup" className="font-semibold text-primary hover:underline">
-          Sign Up
-        </Link>
-      </p>
   </div>
 );
 
