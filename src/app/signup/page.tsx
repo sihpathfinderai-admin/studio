@@ -3,31 +3,31 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, ArrowLeft, Eye, EyeOff, ShieldAlert, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { signUpWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function SignupPage() {
   const router = useRouter();
-  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [dialog, setDialog] = useState<{ title: string; message: string; isError: boolean } | null>(null);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (!fullName) {
-        toast({
-            variant: 'destructive',
+        setDialog({
+            isError: true,
             title: 'Sign Up Failed',
-            description: 'Please enter your full name.',
+            message: 'Please enter your full name.',
         });
         return;
     }
@@ -36,22 +36,50 @@ export default function SignupPage() {
     setLoading(false);
 
     if (error) {
-      toast({
-        variant: 'destructive',
+      setDialog({
+        isError: true,
         title: 'Sign Up Failed',
-        description: error.message,
+        message: error.message,
       });
     } else {
-      toast({
+      setDialog({
+        isError: false,
         title: 'Account Created',
-        description: "Welcome! You're now being redirected to your dashboard.",
+        message: "Welcome! You're now being redirected to your dashboard.",
       });
-      router.push('/dashboard?role=student');
     }
   };
 
+  const closeDialogAndRedirect = () => {
+    setDialog(null);
+    if (dialog && !dialog.isError) {
+      router.push('/dashboard?role=student');
+    }
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-background to-card">
+       <AlertDialog open={!!dialog} onOpenChange={() => dialog?.isError && setDialog(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader className="items-center text-center">
+            {dialog?.isError ? (
+              <ShieldAlert className="w-12 h-12 text-destructive" />
+            ) : (
+              <CheckCircle2 className="w-12 h-12 text-primary" />
+            )}
+            <AlertDialogTitle className="text-2xl">{dialog?.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dialog?.message}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={closeDialogAndRedirect} className="w-full">
+                {dialog?.isError ? 'Close' : 'Go to Dashboard'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
        <div className="absolute top-4 left-4">
         <Button asChild variant="outline">
           <Link href="/">
