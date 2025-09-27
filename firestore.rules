@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Rules for the users collection
+    match /users/{userId} {
+      // Allow user to create their own profile upon signup
+      // The user must be authenticated, the document ID must match their UID,
+      // and they cannot grant themselves admin access.
+      allow create: if request.auth.uid == userId 
+                    && request.resource.data.is_admin == false;
+
+      // A user can read their own document.
+      // An admin can read any user's document.
+      allow read: if request.auth.uid == userId 
+                  || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_admin == true;
+
+      // A user can update their own document, but cannot change their admin status.
+      // An admin can update any user document, including the is_admin flag.
+      allow update: if (request.auth.uid == userId && request.resource.data.is_admin == resource.data.is_admin) 
+                    || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_admin == true;
+      
+      // Only admins can delete user documents.
+      allow delete: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.is_admin == true;
+    }
+
+    // Default deny all other reads/writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
