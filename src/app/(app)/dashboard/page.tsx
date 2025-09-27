@@ -22,6 +22,8 @@ import {
   GitMerge,
   WifiOff,
   Bot,
+  User,
+  Network
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -58,14 +60,14 @@ const StudentDashboardInternal = () => {
     {
       title: "My Profile",
       description: "Complete your profile to get personalized recommendations.",
-      icon: <Target className="h-6 w-6 text-primary" />,
+      icon: <User className="h-6 w-6 text-primary" />,
       link: createLink("/profiler"),
       cta: "Complete Profile",
     },
     {
       title: "Stream Suggestion",
       description: "Discover educational streams that fit you.",
-      icon: <BookCopy className="h-6 w-6 text-primary" />,
+      icon: <Network className="h-6 w-6 text-primary" />,
       link: createLink("/stream"),
       cta: "Get Suggestions",
     },
@@ -91,13 +93,6 @@ const StudentDashboardInternal = () => {
       cta: "Ask AI Advisor",
     },
     {
-        title: "Action Plan",
-        description: "View and manage your tasks to stay on track.",
-        icon: <ListChecks className="h-6 w-6 text-primary" />,
-        link: createLink("/planner"),
-        cta: "View Plan",
-    },
-    {
         title: "College Locator",
         description: "Find the perfect college for your chosen path.",
         icon: <Building className="h-6 w-6 text-primary" />,
@@ -117,6 +112,13 @@ const StudentDashboardInternal = () => {
         icon: <BookCopy className="h-6 w-6 text-primary" />,
         link: createLink("/resources"),
         cta: "Browse Resources",
+    },
+    {
+        title: "Skill Tracker",
+        description: "View and manage your tasks to stay on track.",
+        icon: <ListChecks className="h-6 w-6 text-primary" />,
+        link: createLink("/skill-tracker"),
+        cta: "Track Skills",
     },
     {
         title: "Resume Builder",

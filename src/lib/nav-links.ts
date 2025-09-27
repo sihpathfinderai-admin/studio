@@ -81,15 +81,15 @@ export const navLinks: NavLink[] = [
     roles: ['student'],
   },
   {
-    href: '/planner',
-    label: 'Action Plan',
-    icon: ListChecks,
-    roles: ['student'],
-  },
-  {
     href: '/resources',
     label: 'Learning Resources',
     icon: Library,
+    roles: ['student'],
+  },
+  {
+    href: '/skill-tracker',
+    label: 'Skill Tracker',
+    icon: ListChecks,
     roles: ['student'],
   },
   {
