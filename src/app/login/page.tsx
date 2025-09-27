@@ -186,7 +186,7 @@ export default function LoginPage() {
         </Button>
       </div>
       <div className="absolute inset-0 bg-[url(/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-      <Card className="w-full max-w-lg z-10 shadow-2xl shadow-primary/10">
+      <Card className="w-full max-w-xl z-10 shadow-2xl shadow-primary/10">
         <CardHeader className="relative items-center text-center pt-12">
             {selectedRole && (
                  <Button variant="ghost" onClick={() => setSelectedRole(null)} className="absolute top-4 left-4">
