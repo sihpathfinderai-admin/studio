@@ -99,15 +99,15 @@ export const navLinks: NavLink[] = [
     roles: ['student'],
   },
   {
-    href: '/feedback',
-    label: 'Send Feedback',
-    icon: MessageSquareWarning,
-    roles: ['student'],
-  },
-  {
     href: '/offline',
     label: 'Offline Access',
     icon: WifiOff,
+    roles: ['student'],
+  },
+  {
+    href: '/feedback',
+    label: 'Send Feedback',
+    icon: MessageSquareWarning,
     roles: ['student'],
   },
   // Admin Links
