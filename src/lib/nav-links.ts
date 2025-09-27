@@ -1,3 +1,4 @@
+
 import type { LucideIcon } from 'lucide-react';
 import {
   AreaChart,
@@ -75,7 +76,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/timeline',
-    label: 'My Roadmap',
+    label: 'Roadmap Generator',
     icon: GitMerge,
     roles: ['student'],
   },

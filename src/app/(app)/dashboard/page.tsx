@@ -105,11 +105,11 @@ const StudentDashboardInternal = () => {
         cta: "Find Colleges",
     },
     {
-        title: "My Roadmap",
+        title: "Roadmap Generator",
         description: "Visualize your educational and career timeline.",
         icon: <GitMerge className="h-6 w-6 text-primary" />,
         link: createLink("/timeline"),
-        cta: "View Timeline",
+        cta: "Generate Roadmap",
     },
     {
         title: "Learning Resources",
