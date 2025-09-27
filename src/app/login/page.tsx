@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, ArrowLeft, Eye, EyeOff, User, Shield } from "lucide-react";
+import { GraduationCap, ArrowLeft, Eye, EyeOff, User, Shield, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -44,14 +44,15 @@ const LoginForm = ({ role, onBack }) => {
     <div>
       <AlertDialog open={!!error} onOpenChange={() => setError(null)}>
         <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{error?.title}</AlertDialogTitle>
+          <AlertDialogHeader className="items-center text-center">
+            <ShieldAlert className="w-12 h-12 text-primary" />
+            <AlertDialogTitle className="text-2xl">{error?.title}</AlertDialogTitle>
             <AlertDialogDescription>
               {error?.message}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction onClick={() => setError(null)}>Close</AlertDialogAction>
+            <AlertDialogAction onClick={() => setError(null)} className="w-full">Close</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
