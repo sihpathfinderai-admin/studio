@@ -118,7 +118,7 @@ export default function SignupPage() {
         </CardContent>
       </Card>
       <footer className="z-10 mt-8 text-center text-muted-foreground text-sm">
-        <p>PathWise AI &copy; {new Date().getFullYear()}. Prototype Version.</p>
+        <p>PathWise AI &copy; {new Date().getFullYear()}.</p>
       </footer>
     </main>
   );
