@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'PathWise',
-  description: 'PathWise - Your personalized career & education advisor.',
+  title: 'PathFinder AI',
+  description: 'PathFinder AI - Your personalized career & education advisor.',
 };
 
 export default function RootLayout({

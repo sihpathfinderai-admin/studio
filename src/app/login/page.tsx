@@ -260,7 +260,7 @@ export default function LoginPage() {
             {selectedRole ? `Welcome ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}` : 'Choose Your Role'}
           </CardTitle>
           <CardDescription className="text-lg">
-            {selectedRole ? 'Sign in to your PathWise account' : 'Please select how you would like to access PathWise AI.'}
+            {selectedRole ? 'Sign in to your PathFinder AI account' : 'Please select how you would like to access PathFinder AI.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -272,7 +272,7 @@ export default function LoginPage() {
         </CardContent>
       </Card>
       <footer className="z-10 mt-8 text-center text-muted-foreground text-sm">
-        <p>PathWise AI &copy; {new Date().getFullYear()}.</p>
+        <p>PathFinder AI &copy; {new Date().getFullYear()}.</p>
       </footer>
     </main>
   );

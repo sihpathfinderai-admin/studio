@@ -25,8 +25,8 @@ const getInitials = (name: string) => {
 export function AppHeader({ role }: { role: string }) {
   const user = useMemo(() => {
     return role === "admin"
-      ? { name: "Admin User", email: "admin@pathwise.ai" }
-      : { name: "Student User", email: "student@pathwise.ai" };
+      ? { name: "Admin User", email: "admin@pathfinder.ai" }
+      : { name: "Student User", email: "student@pathfinder.ai" };
   }, [role]);
 
   const userAvatar = PlaceHolderImages.find((img) => img.id === "user-avatar-1");

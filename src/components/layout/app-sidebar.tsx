@@ -78,7 +78,7 @@ export function AppSidebar({ role, paramsString }: { role: string, paramsString:
       <SidebarHeader>
         <Link href={`/dashboard?${paramsString}`} className="flex items-center gap-2">
             <GraduationCap className="w-8 h-8 text-primary" />
-            <span className="font-bold text-lg text-foreground font-headline">PathWise</span>
+            <span className="font-bold text-lg text-foreground font-headline">PathFinder AI</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>

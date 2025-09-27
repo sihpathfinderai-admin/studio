@@ -95,7 +95,7 @@ export default function SignupPage() {
             <GraduationCap className="w-10 h-10 text-primary" />
           </div>
           <CardTitle className="text-3xl font-headline">Create an Account</CardTitle>
-          <CardDescription className="text-lg">Start your journey with PathWise</CardDescription>
+          <CardDescription className="text-lg">Start your journey with PathFinder AI</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <form onSubmit={handleSignUp} className="space-y-4">
@@ -159,7 +159,7 @@ export default function SignupPage() {
         </CardContent>
       </Card>
       <footer className="z-10 mt-8 text-center text-muted-foreground text-sm">
-        <p>PathWise AI &copy; {new Date().getFullYear()}.</p>
+        <p>PathFinder AI &copy; {new Date().getFullYear()}.</p>
       </footer>
     </main>
   );
