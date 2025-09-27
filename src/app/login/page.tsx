@@ -71,31 +71,33 @@ const LoginForm = ({ role }) => {
             disabled={loading}
           />
         </div>
-        <div className="space-y-2 relative">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
             <Link href="#" className="text-xs text-primary hover:underline">
               Forgot password?
             </Link>
           </div>
-          <Input 
-            id="password" 
-            type={showPassword ? "text" : "password"} 
-            required 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={loading}
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute right-1 top-7 h-8 w-8 text-muted-foreground"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
-          </Button>
+          <div className="relative">
+            <Input 
+              id="password" 
+              type={showPassword ? "text" : "password"} 
+              required 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+            </Button>
+          </div>
         </div>
         <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
           {loading ? 'Signing In...' : `Sign In as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
