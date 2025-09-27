@@ -12,8 +12,9 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { GraduationCap, LogOut } from "lucide-react";
+import { GraduationCap, LogOut, PanelLeftClose, PanelRightClose } from "lucide-react";
 import { Button } from "../ui/button";
 
 function AppSidebarMenu({ role, paramsString }: { role: string, paramsString: string }) {
@@ -45,14 +46,20 @@ function AppSidebarMenu({ role, paramsString }: { role: string, paramsString: st
 }
 
 export function AppSidebar({ role, paramsString }: { role: string, paramsString: string }) {
+  const { state, toggleSidebar } = useSidebar();
 
   return (
     <Sidebar variant="inset" collapsible="icon">
       <SidebarHeader>
-        <Link href={`/dashboard?${paramsString}`} className="flex items-center gap-2">
-            <GraduationCap className="w-8 h-8 text-primary" />
-            <span className="font-bold text-lg text-foreground font-headline">PathFinder AI</span>
-        </Link>
+        <div className="flex items-center justify-between">
+            <Link href={`/dashboard?${paramsString}`} className="flex items-center gap-2">
+                <GraduationCap className="w-8 h-8 text-primary" />
+                <span className="font-bold text-lg text-foreground font-headline group-data-[collapsible=icon]:hidden">PathFinder AI</span>
+            </Link>
+            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="group-data-[collapsible=icon]:hidden">
+                <PanelLeftClose />
+            </Button>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <AppSidebarMenu role={role} paramsString={paramsString} />
