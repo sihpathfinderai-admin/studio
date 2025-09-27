@@ -20,7 +20,11 @@ import { Button } from "@/components/ui/button";
 
 const StudentDashboard = () => {
   const searchParams = useSearchParams();
-  const createLink = (href: string) => `${href}?${searchParams.toString()}`;
+  const role = searchParams.get("role");
+  const createLink = (href: string) => {
+    const params = new URLSearchParams(searchParams);
+    return `${href}?${params.toString()}`;
+  }
 
   const studentCards = [
     {
@@ -116,14 +120,14 @@ const AdminDashboard = () => {
           <CardHeader>
             <CardTitle>Content Management</CardTitle>
             <CardDescription>Update information about careers, colleges, and degrees.</CardDescription>
-          </CardHeader>
+          </Header>
            <CardContent><p>300 Careers, 1500 Colleges</p></CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>System Analytics</CardTitle>
             <CardDescription>Monitor platform usage and performance.</CardDescription>
-          </CardHeader>
+          </Header>
            <CardContent><p>Usage is up 15% this month.</p></CardContent>
         </Card>
       </div>

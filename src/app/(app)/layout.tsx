@@ -10,17 +10,21 @@ export default function AppLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Suspense>
-        <SidebarProvider>
+    <SidebarProvider>
+        <Suspense>
           <AppSidebar />
-          <SidebarInset>
-            <AppHeader />
-            <main className="flex-1 p-4 md:p-6 lg:p-8">
-                {children}
-            </main>
-            <Chatbot />
-          </SidebarInset>
-        </SidebarProvider>
-    </Suspense>
+        </Suspense>
+      <SidebarInset>
+        <Suspense>
+          <AppHeader />
+        </Suspense>
+        <main className="flex-1 p-4 md:p-6 lg:p-8">
+            <Suspense>
+              {children}
+            </Suspense>
+        </main>
+        <Chatbot />
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
