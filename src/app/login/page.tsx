@@ -4,7 +4,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, ArrowLeft, Eye, EyeOff, User, Shield, ShieldAlert } from "lucide-react";
+import { GraduationCap, ArrowLeft, Eye, EyeOff, User, Shield, ShieldAlert, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ const LoginForm = ({ role }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<{ title: string; message: string } | null>(null);
+  const [successInfo, setSuccessInfo] = useState<{ role: 'admin' | 'student' } | null>(null);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -33,11 +34,18 @@ const LoginForm = ({ role }) => {
         message: authError.message,
       });
     } else {
-      if (userRole === 'admin') {
+        setSuccessInfo({ role: userRole });
+    }
+  };
+  
+  const closeSuccessDialogAndRedirect = () => {
+    if (successInfo) {
+      if (successInfo.role === 'admin') {
         router.push('/admin');
       } else {
         router.push('/dashboard?role=student');
       }
+      setSuccessInfo(null);
     }
   };
 
@@ -54,6 +62,23 @@ const LoginForm = ({ role }) => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction onClick={() => setError(null)} className="w-full">Close</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!successInfo} onOpenChange={() => successInfo && closeSuccessDialogAndRedirect()}>
+        <AlertDialogContent>
+          <AlertDialogHeader className="items-center text-center">
+            <CheckCircle2 className="w-12 h-12 text-primary" />
+            <AlertDialogTitle className="text-2xl">Sign In Successful</AlertDialogTitle>
+            <AlertDialogDescription>
+              Welcome back! Redirecting you to your dashboard now...
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={closeSuccessDialogAndRedirect} className="w-full">
+                Go to Dashboard
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
