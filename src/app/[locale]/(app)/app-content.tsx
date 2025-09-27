@@ -7,6 +7,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 import { Chatbot } from "@/components/chatbot/chatbot";
 import { Suspense } from "react";
+import { useCurrentLocale } from "@/lib/i18n/client";
 
 export function AppContent({
   children,
@@ -15,6 +16,7 @@ export function AppContent({
 }>) {
   const searchParams = useSearchParams();
   const role = searchParams.get("role") || "student";
+  const locale = useCurrentLocale();
   const paramsString = searchParams.toString();
 
   return (
