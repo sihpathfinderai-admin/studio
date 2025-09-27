@@ -69,11 +69,11 @@ const StudentDashboardInternal = () => {
       cta: "Get Suggestions",
     },
     {
-        title: "Find Degrees",
+        title: "Degree Recommendation",
         description: "Search for degrees and programs from top universities.",
         icon: <GraduationCap className="h-6 w-6 text-primary" />,
         link: createLink("/degree"),
-        cta: "Find Degrees",
+        cta: "Get Recommendations",
     },
     {
       title: "Explore Careers",

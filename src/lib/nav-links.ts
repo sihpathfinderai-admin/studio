@@ -57,7 +57,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/degree',
-    label: 'Degrees',
+    label: 'Degree Recommendation',
     icon: GraduationCap,
     roles: ['student'],
   },
