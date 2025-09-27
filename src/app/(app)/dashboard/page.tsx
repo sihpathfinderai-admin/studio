@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import {
@@ -24,11 +25,30 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 const StudentDashboardInternal = () => {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
+  const [userName, setUserName] = useState("Student");
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          setUserName(userDoc.data().fullName || "Student");
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+  
   const createLink = (href: string) => {
     return `${href}?${params.toString()}`;
   }
@@ -116,7 +136,7 @@ const StudentDashboardInternal = () => {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Hi Gowtham, continue your career journey!</h1>
+        <h1 className="text-3xl font-bold font-headline">Hi {userName}, continue your career journey!</h1>
         <p className="text-muted-foreground">Here's a snapshot of your journey.</p>
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

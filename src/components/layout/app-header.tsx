@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,8 +15,11 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LogOut, Settings, User, Bell, Globe } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "../ui/button";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const getInitials = (name: string) => {
   return name
@@ -25,10 +29,29 @@ const getInitials = (name: string) => {
 };
 
 export function AppHeader({ role }: { role: string }) {
-  const user = useMemo(() => {
-    return role === "admin"
-      ? { name: "Admin User", email: "admin@pathfinder.ai" }
-      : { name: "Gowtham", email: "gowtham@pathfinder.ai" };
+   const [user, setUser] = useState({ name: "User", email: "" });
+ 
+   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const userDocRef = doc(db, "users", firebaseUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUser({
+            name: userData.fullName || "User",
+            email: firebaseUser.email || "",
+          });
+        } else {
+           setUser({
+            name: role === "admin" ? "Admin User" : "User",
+            email: firebaseUser.email || "",
+          });
+        }
+      }
+    });
+
+    return () => unsubscribe();
   }, [role]);
 
   const userAvatar = PlaceHolderImages.find((img) => img.id === "user-avatar-1");
