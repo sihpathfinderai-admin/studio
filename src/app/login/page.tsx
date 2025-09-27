@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, ArrowLeft, Eye, EyeOff, User, Shield } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -11,14 +11,12 @@ import { useState } from "react";
 import { signInWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function LoginPage() {
+const LoginForm = ({ role, onBack }) => {
   const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -44,6 +42,87 @@ export default function LoginPage() {
   };
 
   return (
+    <div>
+        <Button variant="ghost" onClick={onBack} className="mb-4">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to role selection
+        </Button>
+      <form onSubmit={handleSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input 
+            id="email" 
+            type="email" 
+            placeholder={role === 'student' ? 'student@pathwise.ai' : 'admin@pathwise.ai'}
+            required 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={loading}
+          />
+        </div>
+        <div className="space-y-2 relative">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link href="#" className="text-xs text-primary hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+          <Input 
+            id="password" 
+            type={showPassword ? "text" : "password"} 
+            required 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={loading}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="absolute right-1 top-7 h-8 w-8 text-muted-foreground"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+          </Button>
+        </div>
+        <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
+          {loading ? 'Signing In...' : `Sign In as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
+        </Button>
+      </form>
+       <p className="mt-4 text-center text-sm text-muted-foreground">
+        Don't have an account?{" "}
+        <Link href="/signup" className="font-semibold text-primary hover:underline">
+          Sign Up
+        </Link>
+      </p>
+    </div>
+  );
+};
+
+const RoleSelector = ({ onSelectRole }) => (
+  <div className="flex flex-col gap-4">
+     <Button variant="outline" className="w-full h-16 text-lg" onClick={() => onSelectRole('student')}>
+        <User className="mr-4 h-6 w-6"/>
+        I am a Student
+    </Button>
+    <Button variant="outline" className="w-full h-16 text-lg" onClick={() => onSelectRole('admin')}>
+        <Shield className="mr-4 h-6 w-6"/>
+        I am an Admin
+    </Button>
+     <p className="mt-4 text-center text-sm text-muted-foreground">
+        Don't have an account?{" "}
+        <Link href="/signup" className="font-semibold text-primary hover:underline">
+          Sign Up
+        </Link>
+      </p>
+  </div>
+);
+
+export default function LoginPage() {
+  const [selectedRole, setSelectedRole] = useState(null);
+
+  return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-background to-card">
       <div className="absolute top-4 left-4">
         <Button asChild variant="outline">
@@ -59,66 +138,19 @@ export default function LoginPage() {
           <div className="p-3 bg-primary/10 rounded-full mb-4 border border-primary/20">
             <GraduationCap className="w-10 h-10 text-primary" />
           </div>
-          <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
-          <CardDescription className="text-lg">Sign in to your PathWise account</CardDescription>
+          <CardTitle className="text-3xl font-headline">
+            {selectedRole ? `Welcome ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}` : 'Welcome Back'}
+          </CardTitle>
+          <CardDescription className="text-lg">
+            {selectedRole ? 'Sign in to your PathWise account' : 'Please select your role to continue'}
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <Tabs value={role} onValueChange={setRole} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="student">Student</TabsTrigger>
-              <TabsTrigger value="admin">Admin</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          <form onSubmit={handleSignIn} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="student@pathwise.ai" 
-                required 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-              />
-            </div>
-            <div className="space-y-2 relative">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link href="#" className="text-xs text-primary hover:underline">
-                  Forgot password?
-                </Link>
-              </div>
-              <Input 
-                id="password" 
-                type={showPassword ? "text" : "password"} 
-                required 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="absolute right-1 top-7 h-8 w-8 text-muted-foreground"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
-              </Button>
-            </div>
-            <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
-            </Button>
-          </form>
-          <p className="text-center text-sm text-muted-foreground">
-            Don't have an account?{" "}
-            <Link href="/signup" className="font-semibold text-primary hover:underline">
-              Sign Up
-            </Link>
-          </p>
+          {selectedRole ? (
+            <LoginForm role={selectedRole} onBack={() => setSelectedRole(null)} />
+          ) : (
+            <RoleSelector onSelectRole={setSelectedRole} />
+          )}
         </CardContent>
       </Card>
       <footer className="z-10 mt-8 text-center text-muted-foreground text-sm">
