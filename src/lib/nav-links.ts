@@ -94,7 +94,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/resume',
-    label: 'Resume Builder',
+    label: 'Resume & Portfolio Builder',
     icon: FileText,
     roles: ['student'],
   },

@@ -121,11 +121,11 @@ const StudentDashboardInternal = () => {
         cta: "Track Skills",
     },
     {
-        title: "Resume Builder",
+        title: "Resume & Portfolio Builder",
         description: "Create a professional resume in minutes.",
         icon: <FileText className="h-6 w-6 text-primary" />,
         link: createLink("/resume"),
-        cta: "Build Resume",
+        cta: "Build Now",
     },
      {
         title: "Send Feedback",
