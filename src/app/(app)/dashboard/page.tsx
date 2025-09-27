@@ -21,6 +21,7 @@ import {
   MessageSquareWarning,
   GitMerge,
   WifiOff,
+  Bot,
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -81,6 +82,13 @@ const StudentDashboardInternal = () => {
       icon: <Briefcase className="h-6 w-6 text-primary" />,
       link: createLink("/career"),
       cta: "Explore Now",
+    },
+    {
+      title: "AI Career Plan Generator",
+      description: "Get instant, personalized advice for your career and education questions.",
+      icon: <Bot className="h-6 w-6 text-primary" />,
+      link: createLink("/ai-advisor"),
+      cta: "Ask AI Advisor",
     },
     {
         title: "Action Plan",
@@ -159,20 +167,6 @@ const StudentDashboardInternal = () => {
           </Card>
         ))}
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>AI Advisor</CardTitle>
-          <CardDescription>Get instant, personalized advice for your career and education questions.</CardDescription>
-        </CardHeader>
-        <CardContent>
-            <p className="mb-4 text-muted-foreground">Ready to explore your future? Our AI is here to help you navigate your options.</p>
-             <Button asChild>
-                <Link href={createLink("/ai-advisor")}>
-                  Ask AI Advisor <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-        </CardContent>
-      </Card>
     </div>
   );
 };

@@ -44,12 +44,6 @@ export const navLinks: NavLink[] = [
     roles: ['student'],
   },
   {
-    href: '/ai-advisor',
-    label: 'AI Advisor',
-    icon: Bot,
-    roles: ['student'],
-  },
-  {
     href: '/stream',
     label: 'Stream Suggestion',
     icon: Network,
@@ -65,6 +59,12 @@ export const navLinks: NavLink[] = [
     href: '/career',
     label: 'Career Exploration',
     icon: Briefcase,
+    roles: ['student'],
+  },
+  {
+    href: '/ai-advisor',
+    label: 'AI Career Plan Generator',
+    icon: Bot,
     roles: ['student'],
   },
   {

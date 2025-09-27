@@ -77,7 +77,7 @@ export function AiAdvisorClient() {
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">AI-Powered Career Advisor</h1>
+        <h1 className="text-3xl font-bold font-headline">AI Career Plan Generator</h1>
         <p className="text-muted-foreground">
           Fill in your details and let our AI provide personalized recommendations for your future.
         </p>
