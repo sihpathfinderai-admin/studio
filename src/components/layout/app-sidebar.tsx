@@ -58,12 +58,6 @@ export function AppSidebar({ role, paramsString }: { role: string, paramsString:
         <AppSidebarMenu role={role} paramsString={paramsString} />
       </SidebarContent>
       <SidebarFooter>
-         <Link href="/">
-          <Button variant="ghost" className="w-full justify-start gap-2">
-            <LogOut className="w-4 h-4" />
-            <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-          </Button>
-        </Link>
       </SidebarFooter>
     </Sidebar>
   );
