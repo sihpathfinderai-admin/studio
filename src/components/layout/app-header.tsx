@@ -13,7 +13,6 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 const getInitials = (name: string) => {
@@ -23,10 +22,7 @@ const getInitials = (name: string) => {
     .join("");
 };
 
-export function AppHeader() {
-  const searchParams = useSearchParams();
-  const role = searchParams.get("role") || "student";
-
+export function AppHeader({ role }: { role: string }) {
   const user = useMemo(() => {
     return role === "admin"
       ? { name: "Admin User", email: "admin@pathwise.ai" }

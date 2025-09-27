@@ -18,12 +18,12 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 
-const StudentDashboard = () => {
+const StudentDashboardInternal = () => {
   const searchParams = useSearchParams();
-  const role = searchParams.get("role");
+  const params = new URLSearchParams(searchParams);
   const createLink = (href: string) => {
-    const params = new URLSearchParams(searchParams);
     return `${href}?${params.toString()}`;
   }
 
@@ -136,7 +136,7 @@ const AdminDashboard = () => {
   );
 };
 
-export default function DashboardPage() {
+function DashboardPageInternal() {
   const searchParams = useSearchParams();
   const role = searchParams.get("role");
 
@@ -144,5 +144,13 @@ export default function DashboardPage() {
     return <AdminDashboard />;
   }
 
-  return <StudentDashboard />;
+  return <StudentDashboardInternal />;
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense>
+      <DashboardPageInternal />
+    </Suspense>
+  )
 }

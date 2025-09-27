@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { navLinks, type NavLink } from "@/lib/nav-links";
 import {
@@ -18,16 +18,12 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { GraduationCap, LogOut } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "../ui/button";
 
-function AppSidebarMenu() {
+function AppSidebarMenu({ role, paramsString }: { role: string, paramsString: string }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const role = searchParams.get("role") || "student";
 
-  const createLink = (href: string) => `${href}?${searchParams.toString()}`;
+  const createLink = (href: string) => `${href}?${paramsString}`;
 
   const filteredLinks = navLinks.filter((link) =>
     link.roles.includes(role as "student" | "admin")
@@ -75,19 +71,18 @@ function AppSidebarMenu() {
   );
 }
 
-export function AppSidebar() {
-  const userAvatar = PlaceHolderImages.find((img) => img.id === "user-avatar-1");
+export function AppSidebar({ role, paramsString }: { role: string, paramsString: string }) {
 
   return (
     <Sidebar variant="inset" collapsible="icon">
       <SidebarHeader>
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href={`/dashboard?${paramsString}`} className="flex items-center gap-2">
             <GraduationCap className="w-8 h-8 text-primary" />
             <span className="font-bold text-lg text-foreground font-headline">PathWise</span>
         </Link>
       </SidebarHeader>
       <SidebarContent>
-        <AppSidebarMenu />
+        <AppSidebarMenu role={role} paramsString={paramsString} />
       </SidebarContent>
       <SidebarFooter>
          <Link href="/">
