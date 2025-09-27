@@ -178,7 +178,11 @@ const AdminDashboard = () => {
             <CardTitle>Content Management</CardTitle>
             <CardDescription>Update information about careers, colleges, and degrees.</CardDescription>
           </Header>
-           <CardContent><p>300 Careers, 1500 Colleges</p></CardContent>
+           <CardContent>
+            <div>
+              <p>300 Careers, 1500 Colleges</p>
+            </div>
+           </CardContent>
         </Card>
         <Card>
           <CardHeader>
