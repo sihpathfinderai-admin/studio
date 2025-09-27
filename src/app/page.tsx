@@ -27,6 +27,9 @@ export default function LandingPage() {
             <Link href="#contact" className="text-sm font-medium transition-colors hover:text-primary">Contact</Link>
           </nav>
           <div className="flex items-center gap-4">
+             <Button asChild>
+                <Link href="/login">Select Role</Link>
+              </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
