@@ -1,12 +1,37 @@
 
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GraduationCap, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { signInWithEmail } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    const { user, error } = await signInWithEmail(email, password);
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Sign In Failed',
+        description: error.message,
+      });
+    } else {
+      router.push('/dashboard?role=student');
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8 bg-gradient-to-br from-background to-card">
       <div className="absolute top-4 left-4">
@@ -27,19 +52,30 @@ export default function LoginPage() {
           <CardDescription className="text-lg">Sign in to your PathWise account</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <form className="space-y-4">
+          <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="student@pathwise.ai" required />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="student@pathwise.ai" 
+                required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" required />
+              <Input 
+                id="password" 
+                type="password" 
+                required 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <Button type="submit" className="w-full h-12 text-base">
-              <Link href="/dashboard?role=student">
-                Sign In
-              </Link>
+              Sign In
             </Button>
           </form>
           <p className="text-center text-sm text-muted-foreground">
