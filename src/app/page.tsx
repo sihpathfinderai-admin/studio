@@ -3,7 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, HelpCircle, Info, Mail, Phone, MessageSquare, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { AppHeader } from "@/components/layout/app-header";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export default function LandingPage() {
   return (
@@ -25,10 +30,19 @@ export default function LandingPage() {
              <Button asChild>
                 <Link href="/login">Login / Sign Up</Link>
             </Button>
-            <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5"/>
-                <span className="sr-only">Language Selector</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Globe className="h-5 w-5" />
+                  <span className="sr-only">Language Selector</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>English</DropdownMenuItem>
+                <DropdownMenuItem>Español</DropdownMenuItem>
+                <DropdownMenuItem>Français</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
