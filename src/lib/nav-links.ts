@@ -82,7 +82,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/resources',
-    label: 'Learning Resources',
+    label: 'E-Resources',
     icon: Library,
     roles: ['student'],
   },

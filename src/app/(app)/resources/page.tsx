@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function ResourcesPage() {
   return (
     <div>
-      <h1 className="text-3xl font-bold font-headline mb-4">Learning Resources</h1>
+      <h1 className="text-3xl font-bold font-headline mb-4">E-Resources</h1>
       <Card>
         <CardHeader>
             <CardTitle>Your Personalized Library</CardTitle>

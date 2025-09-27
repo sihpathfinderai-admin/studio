@@ -107,11 +107,11 @@ const StudentDashboardInternal = () => {
         cta: "Generate Roadmap",
     },
     {
-        title: "Learning Resources",
+        title: "E-Resources",
         description: "Access curated materials to help you succeed.",
         icon: <BookCopy className="h-6 w-6 text-primary" />,
         link: createLink("/resources"),
-        cta: "Browse Resources",
+        cta: "Browse E-Resources",
     },
     {
         title: "Skill Tracker",
