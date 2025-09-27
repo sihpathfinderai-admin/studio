@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -47,6 +48,7 @@ function AppSidebarMenu({ role, paramsString }: { role: string, paramsString: st
 
 export function AppSidebar({ role, paramsString }: { role: string, paramsString: string }) {
   const { state, toggleSidebar } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -56,15 +58,18 @@ export function AppSidebar({ role, paramsString }: { role: string, paramsString:
                 <GraduationCap className="w-8 h-8 text-primary" />
                 <span className="font-bold text-lg text-foreground font-headline group-data-[collapsible=icon]:hidden">PathFinder AI</span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={toggleSidebar} className="group-data-[collapsible=icon]:hidden">
-                <PanelLeftClose />
-            </Button>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <AppSidebarMenu role={role} paramsString={paramsString} />
       </SidebarContent>
       <SidebarFooter>
+        <div className="flex w-full justify-end">
+            <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+                {isCollapsed ? <PanelRightClose /> : <PanelLeftClose />}
+                <span className="sr-only">{isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}</span>
+            </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );
