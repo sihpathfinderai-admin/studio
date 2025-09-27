@@ -35,7 +35,7 @@ function AppSidebarMenu({ role, paramsString }: { role: string, paramsString: st
                 icon={<link.icon />}
                 tooltip={link.label}
             >
-                {link.label}
+                <link.icon className="inline-block mr-2" /> {link.label}
             </SidebarMenuButton>
             </Link>
         </SidebarMenuItem>
