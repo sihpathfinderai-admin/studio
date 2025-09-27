@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,7 @@ import { signInWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
-const LoginForm = ({ role, onBack }) => {
+const LoginForm = ({ role }) => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -57,10 +58,6 @@ const LoginForm = ({ role, onBack }) => {
         </AlertDialogContent>
       </AlertDialog>
 
-        <Button variant="ghost" onClick={onBack} className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to role selection
-        </Button>
       <form onSubmit={handleSignIn} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
@@ -163,7 +160,13 @@ export default function LoginPage() {
       </div>
       <div className="absolute inset-0 bg-[url(/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
       <Card className="w-full max-w-lg z-10 shadow-2xl shadow-primary/10">
-        <CardHeader className="items-center text-center">
+        <CardHeader className="relative items-center text-center pt-12">
+            {selectedRole && (
+                 <Button variant="ghost" onClick={() => setSelectedRole(null)} className="absolute top-4 left-4">
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                </Button>
+            )}
           <div className="p-3 bg-primary/10 rounded-full mb-4 border border-primary/20">
             <GraduationCap className="w-10 h-10 text-primary" />
           </div>
@@ -176,7 +179,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {selectedRole ? (
-            <LoginForm role={selectedRole} onBack={() => setSelectedRole(null)} />
+            <LoginForm role={selectedRole} />
           ) : (
             <RoleSelector onSelectRole={setSelectedRole} />
           )}
