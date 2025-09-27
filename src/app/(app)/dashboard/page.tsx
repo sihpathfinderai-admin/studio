@@ -76,7 +76,7 @@ const StudentDashboardInternal = () => {
         cta: "Get Recommendations",
     },
     {
-      title: "Explore Careers",
+      title: "Career Exploration",
       description: "Discover career paths that match your interests and skills.",
       icon: <Briefcase className="h-6 w-6 text-primary" />,
       link: createLink("/career"),

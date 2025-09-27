@@ -63,7 +63,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/career',
-    label: 'Careers',
+    label: 'Career Exploration',
     icon: Briefcase,
     roles: ['student'],
   },
