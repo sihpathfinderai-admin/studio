@@ -49,7 +49,7 @@ const LoginForm = ({ role, onBack }) => {
     if (error) {
         setResetDialog(prev => ({ ...prev, state: 'error', message: error.message }));
     } else {
-        setResetDialog(prev => ({ ...prev, state: 'success', message: 'A password reset link has been sent to your email.' }));
+        setResetDialog(prev => ({ ...prev, state: 'success', message: "A password reset link has been sent to your email. Please check your spam folder if you don't see it." }));
     }
   }
 
