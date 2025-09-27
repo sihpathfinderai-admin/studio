@@ -27,8 +27,11 @@ export default function LandingPage() {
             <Link href="#contact" className="text-sm font-medium transition-colors hover:text-primary">Contact</Link>
           </nav>
           <div className="flex items-center gap-4">
+             <Button asChild variant="secondary">
+                <Link href="/login">Login</Link>
+            </Button>
              <Button asChild>
-                <Link href="/login">Login / Sign Up</Link>
+                <Link href="/signup">Sign Up</Link>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -60,7 +63,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-8 flex justify-center gap-4">
               <Button asChild size="lg">
-                <Link href="/login">Get Started for Free</Link>
+                <Link href="/signup">Get Started for Free</Link>
               </Button>
             </div>
           </div>
