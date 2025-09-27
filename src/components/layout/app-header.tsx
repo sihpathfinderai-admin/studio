@@ -12,10 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LogOut, Settings, User, Bell, Globe } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
@@ -54,8 +53,6 @@ export function AppHeader({ role }: { role: string }) {
     return () => unsubscribe();
   }, [role]);
 
-  const userAvatar = PlaceHolderImages.find((img) => img.id === "user-avatar-1");
-
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm md:px-6">
       <SidebarTrigger className="md:hidden" />
@@ -82,13 +79,6 @@ export function AppHeader({ role }: { role: string }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="h-9 w-9 cursor-pointer">
-              {userAvatar && (
-                <AvatarImage
-                  src={userAvatar.imageUrl}
-                  alt={user.name}
-                  data-ai-hint={userAvatar.imageHint}
-                />
-              )}
               <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
