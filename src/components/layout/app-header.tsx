@@ -65,9 +65,17 @@ export function AppHeader({ role }: { role: string }) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem>Kashmiri</DropdownMenuItem>
+            <DropdownMenuItem>Dogri</DropdownMenuItem>
+            <DropdownMenuItem>Urdu</DropdownMenuItem>
+            <DropdownMenuItem>Hindi</DropdownMenuItem>
             <DropdownMenuItem>English</DropdownMenuItem>
-            <DropdownMenuItem>Español</DropdownMenuItem>
-            <DropdownMenuItem>Français</DropdownMenuItem>
+            <DropdownMenuItem>Ladakhi / Bhoti</DropdownMenuItem>
+            <DropdownMenuItem>Balti</DropdownMenuItem>
+            <DropdownMenuItem>Pahari</DropdownMenuItem>
+            <DropdownMenuItem>Shina</DropdownMenuItem>
+            <DropdownMenuItem>Gojri</DropdownMenuItem>
+            <DropdownMenuItem>Punjabi</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
