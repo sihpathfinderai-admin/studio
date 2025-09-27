@@ -69,7 +69,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/colleges',
-    label: 'Colleges',
+    label: 'College Locator',
     icon: Building,
     roles: ['student'],
   },
