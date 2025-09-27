@@ -18,10 +18,22 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const { user, error } = await signUpWithEmail(email, password);
+    if (!fullName) {
+        toast({
+            variant: 'destructive',
+            title: 'Sign Up Failed',
+            description: 'Please enter your full name.',
+        });
+        return;
+    }
+    setLoading(true);
+    const { user, error } = await signUpWithEmail(email, password, fullName);
+    setLoading(false);
+
     if (error) {
       toast({
         variant: 'destructive',
@@ -29,7 +41,10 @@ export default function SignupPage() {
         description: error.message,
       });
     } else {
-      // You can add the full name to the user's profile here if needed
+      toast({
+        title: 'Account Created',
+        description: "Welcome! You're now being redirected to your dashboard.",
+      });
       router.push('/dashboard?role=student');
     }
   };
@@ -64,6 +79,7 @@ export default function SignupPage() {
                 required 
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -75,6 +91,7 @@ export default function SignupPage() {
                 required 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </div>
             <div className="space-y-2">
@@ -85,10 +102,11 @@ export default function SignupPage() {
                 required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
             </div>
-            <Button type="submit" className="w-full h-12 text-base">
-              Sign Up
+            <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
+              {loading ? 'Creating Account...' : 'Sign Up'}
             </Button>
           </form>
           <p className="text-center text-sm text-muted-foreground">

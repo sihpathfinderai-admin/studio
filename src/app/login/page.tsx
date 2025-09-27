@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GraduationCap, ArrowLeft } from "lucide-react";
+import { GraduationCap, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -11,16 +11,23 @@ import { useState } from "react";
 import { signInWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    const { user, error } = await signInWithEmail(email, password);
+    setLoading(true);
+    const { user, error, role: userRole } = await signInWithEmail(email, password, role);
+    setLoading(false);
+    
     if (error) {
       toast({
         variant: 'destructive',
@@ -28,7 +35,11 @@ export default function LoginPage() {
         description: error.message,
       });
     } else {
-      router.push('/dashboard?role=student');
+      if (userRole === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard?role=student');
+      }
     }
   };
 
@@ -52,6 +63,13 @@ export default function LoginPage() {
           <CardDescription className="text-lg">Sign in to your PathWise account</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
+          <Tabs value={role} onValueChange={setRole} className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="student">Student</TabsTrigger>
+              <TabsTrigger value="admin">Admin</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
           <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -62,20 +80,37 @@ export default function LoginPage() {
                 required 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <div className="space-y-2 relative">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link href="#" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
               <Input 
                 id="password" 
-                type="password" 
+                type={showPassword ? "text" : "password"} 
                 required 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-7 h-8 w-8 text-muted-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+              </Button>
             </div>
-            <Button type="submit" className="w-full h-12 text-base">
-              Sign In
+            <Button type="submit" className="w-full h-12 text-base" disabled={loading}>
+              {loading ? 'Signing In...' : 'Sign In'}
             </Button>
           </form>
           <p className="text-center text-sm text-muted-foreground">
