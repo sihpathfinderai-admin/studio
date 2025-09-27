@@ -10,27 +10,26 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { signInWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const LoginForm = ({ role, onBack }) => {
   const router = useRouter();
-  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<{ title: string; message: string } | null>(null);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const { user, error, role: userRole } = await signInWithEmail(email, password, role);
+    const { user, error: authError, role: userRole } = await signInWithEmail(email, password, role);
     setLoading(false);
     
-    if (error) {
-      toast({
-        variant: 'destructive',
+    if (authError) {
+      setError({
         title: 'Sign In Failed',
-        description: error.message,
+        message: authError.message,
       });
     } else {
       if (userRole === 'admin') {
@@ -43,6 +42,20 @@ const LoginForm = ({ role, onBack }) => {
 
   return (
     <div>
+      <AlertDialog open={!!error} onOpenChange={() => setError(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{error?.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {error?.message}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setError(null)}>Close</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
         <Button variant="ghost" onClick={onBack} className="mb-4">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to role selection
