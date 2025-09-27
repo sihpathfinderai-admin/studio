@@ -34,9 +34,13 @@ const LoginForm = ({ role, onBack }) => {
     setLoading(false);
     
     if (authError) {
+      let message = authError.message;
+      if (authError.code === 'auth/invalid-credential') {
+        message = 'Incorrect email or password. Please try again.';
+      }
       setError({
         title: 'Sign In Failed',
-        message: authError.message,
+        message: message,
       });
     } else {
         setSuccessInfo({ role: userRole });
