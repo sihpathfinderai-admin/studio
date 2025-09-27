@@ -101,17 +101,38 @@ const LoginForm = ({ role, onBack }) => {
 };
 
 const RoleSelector = ({ onSelectRole }) => (
-  <div className="flex flex-col gap-4">
-     <Button variant="outline" className="w-full h-16 text-lg" onClick={() => onSelectRole('student')}>
-        <User className="mr-4 h-6 w-6"/>
-        I am a Student
-    </Button>
-    <Button variant="outline" className="w-full h-16 text-lg" onClick={() => onSelectRole('admin')}>
-        <Shield className="mr-4 h-6 w-6"/>
-        I am an Admin
-    </Button>
-  </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card 
+            className="cursor-pointer hover:bg-accent hover:border-primary transition-all"
+            onClick={() => onSelectRole('student')}
+        >
+            <CardHeader className="items-center text-center">
+                <User className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Student</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-muted-foreground text-center">
+                    Access your personalized career roadmap, profiler, and resources.
+                </p>
+            </CardContent>
+        </Card>
+        <Card 
+            className="cursor-pointer hover:bg-accent hover:border-primary transition-all"
+            onClick={() => onSelectRole('admin')}
+        >
+            <CardHeader className="items-center text-center">
+                <Shield className="h-8 w-8 text-primary mb-2" />
+                <CardTitle>Admin</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-muted-foreground text-center">
+                    Access the admin dashboard to manage students and platform content.
+                </p>
+            </CardContent>
+        </Card>
+    </div>
 );
+
 
 export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState(null);
@@ -127,16 +148,16 @@ export default function LoginPage() {
         </Button>
       </div>
       <div className="absolute inset-0 bg-[url(/grid.svg)] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-      <Card className="w-full max-w-md z-10 shadow-2xl shadow-primary/10">
+      <Card className="w-full max-w-lg z-10 shadow-2xl shadow-primary/10">
         <CardHeader className="items-center text-center">
           <div className="p-3 bg-primary/10 rounded-full mb-4 border border-primary/20">
             <GraduationCap className="w-10 h-10 text-primary" />
           </div>
           <CardTitle className="text-3xl font-headline">
-            {selectedRole ? `Welcome ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}` : 'Welcome Back'}
+            {selectedRole ? `Welcome ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}` : 'Choose Your Role'}
           </CardTitle>
           <CardDescription className="text-lg">
-            {selectedRole ? 'Sign in to your PathWise account' : 'Please select your role to continue'}
+            {selectedRole ? 'Sign in to your PathWise account' : 'Please select how you would like to access PathWise AI.'}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
