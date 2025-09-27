@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import {
@@ -14,6 +15,12 @@ import {
   GraduationCap,
   ListChecks,
   Target,
+  BookCopy,
+  Building,
+  FileText,
+  MessageSquareWarning,
+  GitMerge,
+  WifiOff,
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -36,6 +43,20 @@ const StudentDashboardInternal = () => {
       cta: "Complete Profile",
     },
     {
+      title: "Explore Streams",
+      description: "Discover educational streams that fit you.",
+      icon: <BookCopy className="h-6 w-6 text-primary" />,
+      link: createLink("/stream"),
+      cta: "Explore Streams",
+    },
+    {
+        title: "Find Degrees",
+        description: "Search for degrees and programs from top universities.",
+        icon: <GraduationCap className="h-6 w-6 text-primary" />,
+        link: createLink("/degree"),
+        cta: "Find Degrees",
+    },
+    {
       title: "Explore Careers",
       description: "Discover career paths that match your interests and skills.",
       icon: <Briefcase className="h-6 w-6 text-primary" />,
@@ -43,28 +64,63 @@ const StudentDashboardInternal = () => {
       cta: "Explore Now",
     },
     {
-      title: "Find Degrees",
-      description: "Search for degrees and programs from top universities.",
-      icon: <GraduationCap className="h-6 w-6 text-primary" />,
-      link: createLink("/degree"),
-      cta: "Find Degrees",
+        title: "Action Plan",
+        description: "View and manage your tasks to stay on track.",
+        icon: <ListChecks className="h-6 w-6 text-primary" />,
+        link: createLink("/planner"),
+        cta: "View Plan",
     },
     {
-      title: "Action Plan",
-      description: "View and manage your tasks to stay on track.",
-      icon: <ListChecks className="h-6 w-6 text-primary" />,
-      link: createLink("/planner"),
-      cta: "View Plan",
+        title: "College Locator",
+        description: "Find the perfect college for your chosen path.",
+        icon: <Building className="h-6 w-6 text-primary" />,
+        link: createLink("/colleges"),
+        cta: "Find Colleges",
     },
+    {
+        title: "My Roadmap",
+        description: "Visualize your educational and career timeline.",
+        icon: <GitMerge className="h-6 w-6 text-primary" />,
+        link: createLink("/timeline"),
+        cta: "View Timeline",
+    },
+    {
+        title: "Learning Resources",
+        description: "Access curated materials to help you succeed.",
+        icon: <BookCopy className="h-6 w-6 text-primary" />,
+        link: createLink("/resources"),
+        cta: "Browse Resources",
+    },
+    {
+        title: "Resume Builder",
+        description: "Create a professional resume in minutes.",
+        icon: <FileText className="h-6 w-6 text-primary" />,
+        link: createLink("/resume"),
+        cta: "Build Resume",
+    },
+     {
+        title: "Send Feedback",
+        description: "Share your thoughts to help us improve the platform.",
+        icon: <MessageSquareWarning className="h-6 w-6 text-primary" />,
+        link: createLink("/feedback"),
+        cta: "Give Feedback",
+    },
+    {
+        title: "Offline Access",
+        description: "Access your saved resources without an internet connection.",
+        icon: <WifiOff className="h-6 w-6 text-primary" />,
+        link: createLink("/offline"),
+        cta: "View Offline Content",
+    }
   ];
 
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold font-headline">Welcome, Student!</h1>
+        <h1 className="text-3xl font-bold font-headline">Hi Gowtham, continue your career journey!</h1>
         <p className="text-muted-foreground">Here's a snapshot of your journey.</p>
       </div>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {studentCards.map((card) => (
           <Card key={card.title} className="flex flex-col">
             <CardHeader>
@@ -121,14 +177,14 @@ const AdminDashboard = () => {
           <CardHeader>
             <CardTitle>Content Management</CardTitle>
             <CardDescription>Update information about careers, colleges, and degrees.</CardDescription>
-          </CardHeader>
+          </Header>
            <CardContent><p>300 Careers, 1500 Colleges</p></CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>System Analytics</CardTitle>
             <CardDescription>Monitor platform usage and performance.</CardDescription>
-          </CardHeader>
+          </Header>
            <CardContent><p>Usage is up 15% this month.</p></CardContent>
         </Card>
       </div>

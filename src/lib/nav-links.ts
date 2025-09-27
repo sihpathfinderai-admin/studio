@@ -18,6 +18,7 @@ import {
   Users,
   User,
   BookCopy,
+  WifiOff
 } from 'lucide-react';
 
 export type NavLink = {
@@ -38,7 +39,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/profiler',
-    label: 'My Profile',
+    label: 'Profiler',
     icon: User,
     roles: ['student'],
   },
@@ -49,97 +50,70 @@ export const navLinks: NavLink[] = [
     roles: ['student'],
   },
   {
-    href: '#',
-    label: 'Explore Paths',
+    href: '/stream',
+    label: 'Streams',
     icon: Network,
     roles: ['student'],
-    isGroup: true,
-    children: [
-      {
-        href: '/stream',
-        label: 'Streams',
-        icon: Network,
-        roles: ['student'],
-      },
-      {
-        href: '/degree',
-        label: 'Degrees',
-        icon: GraduationCap,
-        roles: ['student'],
-      },
-      {
-        href: '/career',
-        label: 'Careers',
-        icon: Briefcase,
-        roles: ['student'],
-      },
-      {
-        href: '/colleges',
-        label: 'Colleges',
-        icon: Building,
-        roles: ['student'],
-      },
-    ],
   },
   {
-    href: '#',
-    label: 'My Journey',
+    href: '/degree',
+    label: 'Degrees',
+    icon: GraduationCap,
+    roles: ['student'],
+  },
+  {
+    href: '/career',
+    label: 'Careers',
+    icon: Briefcase,
+    roles: ['student'],
+  },
+  {
+    href: '/colleges',
+    label: 'Colleges',
+    icon: Building,
+    roles: ['student'],
+  },
+  {
+    href: '/timeline',
+    label: 'Timeline',
     icon: GitMerge,
     roles: ['student'],
-    isGroup: true,
-    children: [
-      {
-        href: '/timeline',
-        label: 'Roadmap',
-        icon: GitMerge,
-        roles: ['student'],
-      },
-      {
-        href: '/planner',
-        label: 'Action Plan',
-        icon: ListChecks,
-        roles: ['student'],
-      },
-      {
-        href: '/resources',
-        label: 'My Resources',
-        icon: Library,
-        roles: ['student'],
-      },
-      {
-        href: '/resume',
-        label: 'Resume Builder',
-        icon: FileText,
-        roles: ['student'],
-      },
-    ],
   },
   {
-    href: '#',
-    label: 'Support',
-    icon: MessagesSquare,
+    href: '/planner',
+    label: 'Planner',
+    icon: ListChecks,
     roles: ['student'],
-    isGroup: true,
-    children: [
-      {
-        href: '/counselor',
-        label: 'Counselor Connect',
-        icon: MessagesSquare,
-        roles: ['student'],
-      },
-      {
-        href: '/parents',
-        label: 'Parent Portal',
-        icon: HeartHandshake,
-        roles: ['student'],
-      },
-      {
-        href: '/feedback',
-        label: 'Send Feedback',
-        icon: MessageSquareWarning,
-        roles: ['student'],
-      },
-    ],
+  },
+  {
+    href: '/resources',
+    label: 'Resources',
+    icon: Library,
+    roles: ['student'],
+  },
+  {
+    href: '/resume',
+    label: 'Resume',
+    icon: FileText,
+    roles: ['student'],
+  },
+   {
+    href: '/parents',
+    label: 'Parent Portal',
+    icon: HeartHandshake,
+    roles: ['student'],
+  },
+  {
+    href: '/feedback',
+    label: 'Feedback',
+    icon: MessageSquareWarning,
+    roles: ['student'],
+  },
+  {
+    href: '/offline',
+    label: 'Offline',
+    icon: WifiOff,
+    roles: ['student'],
   },
   // Admin Links
   {

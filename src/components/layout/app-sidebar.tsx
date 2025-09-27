@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname } from "next/navigation";
@@ -11,11 +12,6 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { GraduationCap, LogOut } from "lucide-react";
 import { Button } from "../ui/button";
@@ -31,42 +27,19 @@ function AppSidebarMenu({ role, paramsString }: { role: string, paramsString: st
 
   return (
     <SidebarMenu>
-      {filteredLinks.map((link, i) =>
-        link.isGroup && link.children ? (
-          <SidebarGroup key={`${link.label}-${i}`}>
-            <SidebarGroupLabel>{link.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {link.children.map((child, j) => (
-                  <SidebarMenuItem key={`${child.label}-${j}`}>
-                    <Link href={createLink(child.href)} className="w-full">
-                      <SidebarMenuButton
-                        isActive={pathname === child.href}
-                        icon={<child.icon />}
-                        tooltip={child.label}
-                      >
-                        {child.label}
-                      </SidebarMenuButton>
-                    </Link>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ) : (
-          <SidebarMenuItem key={`${link.label}-${i}`}>
-             <Link href={createLink(link.href)} className="w-full">
-              <SidebarMenuButton
+      {filteredLinks.map((link, i) => (
+        <SidebarMenuItem key={`${link.label}-${i}`}>
+            <Link href={createLink(link.href)} className="w-full">
+            <SidebarMenuButton
                 isActive={pathname === link.href}
                 icon={<link.icon />}
                 tooltip={link.label}
-              >
+            >
                 {link.label}
-              </SidebarMenuButton>
+            </SidebarMenuButton>
             </Link>
-          </SidebarMenuItem>
-        )
-      )}
+        </SidebarMenuItem>
+      ))}
     </SidebarMenu>
   );
 }
