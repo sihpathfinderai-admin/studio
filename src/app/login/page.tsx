@@ -93,7 +93,7 @@ const LoginForm = ({ role, onBack }) => {
             type="button"
             variant="ghost"
             size="icon"
-            className="absolute right-1 top-7 h-8 w-8 text-muted-foreground"
+            className="absolute right-1 top-9 h-8 w-8 text-muted-foreground"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
