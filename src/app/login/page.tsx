@@ -13,7 +13,7 @@ import { signInWithEmail } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
-const LoginForm = ({ role }) => {
+const LoginForm = ({ role, onBack }) => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -51,7 +51,7 @@ const LoginForm = ({ role }) => {
 
   return (
     <div>
-      <AlertDialog open={!!error} onOpenChange={() => setError(null)}>
+       <AlertDialog open={!!error} onOpenChange={() => setError(null)}>
         <AlertDialogContent>
           <AlertDialogHeader className="items-center text-center">
             <ShieldAlert className="w-12 h-12 text-primary" />
@@ -72,7 +72,7 @@ const LoginForm = ({ role }) => {
             <CheckCircle2 className="w-12 h-12 text-primary" />
             <AlertDialogTitle className="text-2xl">Sign In Successful</AlertDialogTitle>
             <AlertDialogDescription>
-              Welcome back! Redirecting you to your dashboard now...
+              Welcome back! Redirecting you to the {successInfo?.role} dashboard.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -206,7 +206,7 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {selectedRole ? (
-            <LoginForm role={selectedRole} />
+            <LoginForm role={selectedRole} onBack={() => setSelectedRole(null)} />
           ) : (
             <RoleSelector onSelectRole={setSelectedRole} />
           )}
