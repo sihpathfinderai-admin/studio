@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function ProfilerPage() {
   return (
     <div>
-      <h1 className="text-3xl font-bold font-headline mb-4">My Profile</h1>
+      <h1 className="text-3xl font-bold font-headline mb-4">Profiler</h1>
       <Card>
         <CardHeader>
             <CardTitle>User Profile Section</CardTitle>

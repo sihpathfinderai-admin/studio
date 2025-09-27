@@ -40,7 +40,7 @@ export const navLinks: NavLink[] = [
   },
   {
     href: '/profiler',
-    label: 'My Profile',
+    label: 'Profiler',
     icon: User,
     roles: ['student'],
   },

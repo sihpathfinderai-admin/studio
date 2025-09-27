@@ -58,7 +58,7 @@ const StudentDashboardInternal = () => {
 
   const studentCards = [
     {
-      title: "My Profile",
+      title: "Profiler",
       description: "Complete your profile to get personalized recommendations.",
       icon: <User className="h-6 w-6 text-primary" />,
       link: createLink("/profiler"),
