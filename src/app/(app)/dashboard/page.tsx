@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -120,14 +121,14 @@ const AdminDashboard = () => {
           <CardHeader>
             <CardTitle>Content Management</CardTitle>
             <CardDescription>Update information about careers, colleges, and degrees.</CardDescription>
-          </Header>
+          </CardHeader>
            <CardContent><p>300 Careers, 1500 Colleges</p></CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>System Analytics</CardTitle>
             <CardDescription>Monitor platform usage and performance.</CardDescription>
-          </Header>
+          </CardHeader>
            <CardContent><p>Usage is up 15% this month.</p></CardContent>
         </Card>
       </div>
