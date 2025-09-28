@@ -10,7 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { careerPlanModel } from '../genkit';
+import { definePromptWithFallback } from '../genkit';
 
 const PersonalizedCareerSuggestionsInputSchema = z.object({
   strengths: z.array(z.string()).describe("The user's top strengths (e.g., Analytical, Creative)."),
@@ -35,7 +35,7 @@ export async function getPersonalizedCareerSuggestions(input: PersonalizedCareer
   return personalizedCareerSuggestionsFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const prompt = definePromptWithFallback({
   name: 'personalizedCareerSuggestionsPrompt',
   input: {schema: PersonalizedCareerSuggestionsInputSchema},
   output: {schema: PersonalizedCareerSuggestionsOutputSchema},
@@ -62,7 +62,6 @@ Based on all this information, provide comprehensive and personalized suggestion
 - Colleges
 - Degrees
 - Streams`,
-  model: careerPlanModel,
 });
 
 const personalizedCareerSuggestionsFlow = ai.defineFlow(

@@ -10,7 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { skillsModel } from '../genkit';
+import { definePromptWithFallback } from '../genkit';
 
 const FutureSkillsInputSchema = z.object({
   careerPath: z.string().describe('The chosen career or degree path of the student.'),
@@ -29,7 +29,7 @@ export async function getFutureSkills(input: FutureSkillsInput): Promise<FutureS
   return futureSkillsFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const prompt = definePromptWithFallback({
   name: 'futureSkillsPrompt',
   input: {schema: FutureSkillsInputSchema},
   output: {schema: FutureSkillsOutputSchema},
@@ -43,7 +43,6 @@ Based on this career path, provide the following:
 - A list of trending technologies and tools with brief descriptions.
 - A concise, actionable skill upgrade path to stay ahead of automation.
 `,
-  model: skillsModel,
 });
 
 const futureSkillsFlow = ai.defineFlow(

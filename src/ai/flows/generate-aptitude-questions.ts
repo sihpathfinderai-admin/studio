@@ -9,7 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { profileAnalysisModel } from '../genkit';
+import { definePromptWithFallback } from '../genkit';
 
 const AptitudeQuestionSchema = z.object({
   question: z.string().describe('The question text.'),
@@ -27,7 +27,7 @@ export async function generateAptitudeQuestions(): Promise<AptitudeQuestionsOutp
   return aptitudeQuestionFlow();
 }
 
-const prompt = ai.definePrompt({
+const prompt = definePromptWithFallback({
   name: 'aptitudeQuestionPrompt',
   output: {schema: AptitudeQuestionsOutputSchema},
   prompt: `You are an expert in creating educational assessments. Generate a set of 10 unique aptitude questions suitable for a student in 9th or 10th grade.
@@ -45,7 +45,6 @@ Each question must have:
 
 Do not repeat questions. Ensure the difficulty is appropriate for the specified grade level.
 `,
-  model: profileAnalysisModel,
 });
 
 const aptitudeQuestionFlow = ai.defineFlow(
