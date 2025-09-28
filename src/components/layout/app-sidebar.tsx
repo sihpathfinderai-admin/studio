@@ -31,7 +31,7 @@ function AppSidebarMenu({ role, paramsString }: { role: string, paramsString: st
     <SidebarMenu>
       {filteredLinks.map((link, i) => (
         <SidebarMenuItem key={`${link.label}-${i}`}>
-            <Link href={createLink(link.href)} className="w-full">
+            <Link href={createLink(link.href)} prefetch={true} className="w-full">
             <SidebarMenuButton
                 isActive={pathname === link.href}
                 icon={<link.icon />}
