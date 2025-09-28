@@ -37,6 +37,8 @@ import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Link from 'next/link';
+import { getAptitudeQuestions } from './actions';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const interestQuestions = [
     { id: 'tech', label: 'How interested are you in building apps or working with computers?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'], category: 'Technical' },
@@ -46,26 +48,12 @@ const interestQuestions = [
     { id: 'helping', label: 'How interested are you in working with people and helping others?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'], category: 'Social' },
 ];
 
-const aptitudeQuestions = [
-  {
-    question: 'A train travels 120 km in 2 hours. What is its speed in km/h?',
-    options: ['50 km/h', '60 km/h', '70 km/h', '80 km/h'],
-    answer: '60 km/h',
-    category: 'Logical'
-  },
-  {
-    question: 'Find the next number in the series: 5, 10, 15, 20, ...?',
-    options: ['25', '30', '35', '40'],
-    answer: '25',
-    category: 'Logical'
-  },
-  {
-    question: 'If a book costs ₹80 after a 20% discount, what was its original price?',
-    options: ['₹96', '₹100', '₹110', '₹120'],
-    answer: '₹100',
-    category: 'Analytical'
-  }
-];
+type AptitudeQuestion = {
+    question: string;
+    options: string[];
+    answer: string;
+    category: 'Logical' | 'Analytical' | 'Verbal';
+};
 
 const personalityQuestions = [
     { question: 'When starting a new project, do you prefer to:', options: ['Plan everything in detail first', 'Jump in and figure it out as you go'], category: 'Logical' },
@@ -86,6 +74,7 @@ const initialChartData = [
   { category: 'Analytical', score: 0, fullMark: 100 },
   { category: 'Social', score: 0, fullMark: 100 },
   { category: 'Technical', score: 0, fullMark: 100 },
+  { category: 'Verbal', score: 0, fullMark: 100},
 ];
 
 export default function ProfilerPage() {
@@ -98,6 +87,9 @@ export default function ProfilerPage() {
   const [aptitudeAnswers, setAptitudeAnswers] = useState<Record<string, string>>({});
   const [personalityAnswers, setPersonalityAnswers] = useState<Record<string, string>>({});
   
+  const [aptitudeQuestions, setAptitudeQuestions] = useState<AptitudeQuestion[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+
   const [manualProfile, setManualProfile] = useState({
       strongestSubject: '',
       math: 3,
@@ -123,8 +115,10 @@ export default function ProfilerPage() {
   const totalQuestions = aptitudeQuestions.length + interestQuestions.length + personalityQuestions.length;
   
   useEffect(() => {
-    const answeredCount = Object.keys(interestAnswers).length + Object.keys(aptitudeAnswers).length + Object.keys(personalityAnswers).length;
-    setProgress(Math.min((answeredCount / totalQuestions) * 100, 100));
+    if (totalQuestions > 0) {
+      const answeredCount = Object.keys(interestAnswers).length + Object.keys(aptitudeAnswers).length + Object.keys(personalityAnswers).length;
+      setProgress(Math.min((answeredCount / totalQuestions) * 100, 100));
+    }
   }, [interestAnswers, aptitudeAnswers, personalityAnswers, totalQuestions]);
 
   const handleAnswerChange = (section: 'interest' | 'aptitude' | 'personality', questionId: string, value: string) => {
@@ -138,8 +132,8 @@ export default function ProfilerPage() {
   };
   
   const calculateResults = () => {
-    const scores = { 'Logical': 0, 'Creative': 0, 'Analytical': 0, 'Social': 0, 'Technical': 0 };
-    const maxScores = { 'Logical': 0, 'Creative': 0, 'Analytical': 0, 'Social': 0, 'Technical': 0 };
+    const scores = { 'Logical': 0, 'Creative': 0, 'Analytical': 0, 'Social': 0, 'Technical': 0, 'Verbal': 0 };
+    const maxScores = { 'Logical': 0, 'Creative': 0, 'Analytical': 0, 'Social': 0, 'Technical': 0, 'Verbal': 0 };
 
     interestQuestions.forEach((q, i) => {
       const answer = interestAnswers[q.id];
@@ -180,10 +174,11 @@ export default function ProfilerPage() {
      // A simple mapping from manual inputs to profile categories
     const scores = {
         'Logical': manualProfile.math * 20, 
-        'Analytical': manualProfile.science * 20, 
-        'Creative': 0, // No direct input for this in the new form
-        'Social': 0, // No direct input
-        'Technical': 0 // No direct input
+        'Analytical': manualProfile.science * 20,
+        'Verbal': manualProfile.english * 20,
+        'Creative': 0,
+        'Social': 0,
+        'Technical': 0
     };
 
     if (manualProfile.strongestSubject === 'Maths' || manualProfile.strongestSubject === 'Commerce') {
@@ -231,6 +226,19 @@ export default function ProfilerPage() {
     } finally {
         setIsSaving(false);
     }
+  }
+
+  const startAiTest = async () => {
+    setLoadingQuestions(true);
+    setCurrentStep(1);
+    const result = await getAptitudeQuestions();
+    if(result.message === 'success' && result.data?.questions) {
+      setAptitudeQuestions(result.data.questions);
+    } else {
+      toast({ variant: 'destructive', title: 'Error', description: 'Could not load aptitude questions. Please try again later.' });
+      setCurrentStep(0);
+    }
+    setLoadingQuestions(false);
   }
 
 
@@ -316,8 +324,8 @@ export default function ProfilerPage() {
               </CardDescription>
             </CardHeader>
             <CardFooter className="mt-auto">
-              <Button size="lg" onClick={() => setCurrentStep(1)} className="w-full">
-                Start AI Test
+              <Button size="lg" onClick={startAiTest} className="w-full" disabled={loadingQuestions}>
+                {loadingQuestions ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Starting...</> : 'Start AI Test'}
               </Button>
             </CardFooter>
           </Card>
@@ -462,19 +470,33 @@ export default function ProfilerPage() {
             )}
             {currentStep === 2 && (
                  <div className="space-y-6">
-                    {aptitudeQuestions.map((q, i) => (
-                        <div key={i} className="space-y-3">
-                            <Label>{i + 1}. {q.question}</Label>
-                            <RadioGroup onValueChange={(value) => handleAnswerChange('aptitude', `${i}`, value)} value={aptitudeAnswers[i]}>
-                                {q.options.map(opt => (
-                                    <div key={opt} className="flex items-center space-x-2">
-                                        <RadioGroupItem value={opt} id={`q${i}-${opt}`} />
-                                        <Label htmlFor={`q${i}-${opt}`}>{opt}</Label>
-                                    </div>
-                                ))}
-                            </RadioGroup>
-                        </div>
-                    ))}
+                    {loadingQuestions ? (
+                        Array.from({length: 5}).map((_, i) => (
+                          <div key={i} className="space-y-3">
+                            <Skeleton className="h-5 w-3/4" />
+                            <div className="space-y-2 pt-2">
+                              <Skeleton className="h-4 w-1/2" />
+                              <Skeleton className="h-4 w-1/2" />
+                              <Skeleton className="h-4 w-1/2" />
+                              <Skeleton className="h-4 w-1/2" />
+                            </div>
+                          </div>
+                        ))
+                    ) : (
+                        aptitudeQuestions.map((q, i) => (
+                            <div key={i} className="space-y-3">
+                                <Label>{i + 1}. {q.question}</Label>
+                                <RadioGroup onValueChange={(value) => handleAnswerChange('aptitude', `${i}`, value)} value={aptitudeAnswers[i]}>
+                                    {q.options.map(opt => (
+                                        <div key={opt} className="flex items-center space-x-2">
+                                            <RadioGroupItem value={opt} id={`q${i}-${opt}`} />
+                                            <Label htmlFor={`q${i}-${opt}`}>{opt}</Label>
+                                        </div>
+                                    ))}
+                                </RadioGroup>
+                            </div>
+                        ))
+                    )}
                 </div>
             )}
             {currentStep === 3 && (
