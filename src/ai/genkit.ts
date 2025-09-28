@@ -54,12 +54,6 @@ export const lightModel = genkit.lookupModel(modelChain, {
   apiKey: process.env.GEMINI_API_KEY_LIGHT,
 });
 
-// Default model for other/new flows
-export const defaultModel = genkit.lookupModel(modelChain, {
-  label: 'Default Model',
-  apiKey: process.env.GEMINI_API_KEY,
-});
-
 export const ai = genkit.genkit({
   plugins: [googleAI()],
   models: [
@@ -70,7 +64,6 @@ export const ai = genkit.genkit({
     skillsModel,
     resumeModel,
     lightModel,
-    defaultModel,
   ],
-  model: defaultModel, // Keep a default for simplicity
+  model: lightModel, // Use a default for simplicity, like the light model.
 });
