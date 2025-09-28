@@ -40,7 +40,7 @@ Each question must have:
 - A clear question text.
 - Exactly 4 multiple-choice options.
 - A single correct answer that is one of the provided options.
-- The category it belongs to ('Logical', 'Analytical', or 'Verbal').
+- The category it belongs to ('Logical', 'Analytical', 'Verbal').
 
 Do not repeat questions. Ensure the difficulty is appropriate for the specified grade level.
 `,
