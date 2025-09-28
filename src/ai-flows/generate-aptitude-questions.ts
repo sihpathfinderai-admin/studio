@@ -53,6 +53,9 @@ const aptitudeQuestionFlow = ai.defineFlow(
     outputSchema: AptitudeQuestionsOutputSchema,
   },
   async () => {
+    if (!profileAnalysisModel) {
+      throw new Error('Profile analysis model is not configured. Please check API keys.');
+    }
     const {output} = await prompt();
     return output!;
   }

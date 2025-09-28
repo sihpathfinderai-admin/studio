@@ -1,47 +1,46 @@
-import { genkit } from 'genkit';
-import { googleAI } from '@genkit-ai/googleai';
-import { config } from 'dotenv';
+'use server';
+
+import {genkit} from 'genkit';
+import {googleAI} from '@genkit-ai/googleai';
+import {config} from 'dotenv';
 config();
 
+// Helper function to create a configured Google AI plugin
+const createGoogleAIPlugin = (apiKey: string | undefined) => {
+  if (!apiKey) return null;
+  return googleAI({apiKey});
+};
+
+// Create separate plugin instances for each API key
+const careerPlanPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_CAREER_PLAN);
+const roadmapPlugin = createGoogle-AIPlugin(process.env.GEMINI_API_KEY_ROADMAP);
+const careerExplorationPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_CAREER_EXPLORATION);
+const profilePlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_PROFILE);
+const skillsPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_SKILLS);
+const resumePlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_RESUME);
+const lightPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_LIGHT);
+
 // This is the main AI plugin configuration.
+// We filter out any null plugins in case an API key is not set.
 export const ai = genkit({
-  plugins: [googleAI()],
+  plugins: [
+    careerPlanPlugin,
+    roadmapPlugin,
+    careerExplorationPlugin,
+    profilePlugin,
+    skillsPlugin,
+    resumePlugin,
+    lightPlugin,
+  ].filter(p => p !== null) as any[], // Use 'as any[]' to satisfy TypeScript
 });
 
-// The following are model definitions that use specific API keys.
-// This is the correct way to create model aliases in Genkit v1.x.
+// The following are model definitions that reference models from the specific plugins.
+// This is the correct way to create model aliases in Genkit v1.x with different API keys.
 
-// API Key 1: AI Career Plan Generator (heavy)
-export const careerPlanModel = googleAI.model('gemini-2.5-pro', {
-  clientOptions: { apiKey: process.env.GEMINI_API_KEY_CAREER_PLAN },
-});
-
-// API Key 2: Roadmap Generator (heavy)
-export const roadmapModel = googleAI.model('gemini-2.5-pro', {
-  clientOptions: { apiKey: process.env.GEMINI_API_KEY_ROADMAP },
-});
-
-// API Key 3: Career Exploration (heavy)
-export const careerExplorationModel = googleAI.model('gemini-2.5-pro', {
-  clientOptions: { apiKey: process.env.GEMINI_API_KEY_CAREER_EXPLORATION },
-});
-
-// API Key 4: Profiler, Stream Suggestion, Degree Recommendation (medium group)
-export const profileAnalysisModel = googleAI.model('gemini-2.5-flash', {
-  clientOptions: { apiKey: process.env.GEMINI_API_KEY_PROFILE },
-});
-
-// API Key 5: Skill Tracker + Future Skills Radar (medium group)
-export const skillsModel = googleAI.model('gemini-2.5-flash', {
-  clientOptions: { apiKey: process.env.GEMINI_API_KEY_SKILLS },
-});
-
-// API Key 6: Resume & Portfolio Builder (medium-heavy)
-export const resumeModel = googleAI.model('gemini-2.5-pro', {
-  clientOptions: { apiKey: process.env.GEMINI_API_KEY_RESUME },
-});
-
-// API Key 7: All light/non-AI tools
-export const lightModel = googleAI.model('gemini-2.5-flash', {
-  clientOptions: { apiKey: process.env.GEMINI_API_KEY_LIGHT },
-});
+export const careerPlanModel = careerPlanPlugin ? careerPlanPlugin.model('gemini-2.5-pro') : undefined;
+export const roadmapModel = roadmapPlugin ? roadmapPlugin.model('gemini-2.5-pro') : undefined;
+export const careerExplorationModel = careerExplorationPlugin ? careerExplorationPlugin.model('gemini-2.5-pro') : undefined;
+export const profileAnalysisModel = profilePlugin ? profilePlugin.model('gemini-2.5-flash') : undefined;
+export const skillsModel = skillsPlugin ? skillsPlugin.model('gemini-2.5-flash') : undefined;
+export const resumeModel = resumePlugin ? resumePlugin.model('gemini-2.5-pro') : undefined;
+export const lightModel = lightPlugin ? lightPlugin.model('gemini-2.5-flash') : undefined;
