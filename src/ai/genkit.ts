@@ -13,25 +13,27 @@ const createGoogleAIPlugin = (apiKey: string | undefined) => {
 
 // Create separate plugin instances for each API key
 const careerPlanPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_CAREER_PLAN);
-const roadmapPlugin = createGoogle-AIPlugin(process.env.GEMINI_API_KEY_ROADMAP);
+const roadmapPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_ROADMAP);
 const careerExplorationPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_CAREER_EXPLORATION);
 const profilePlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_PROFILE);
 const skillsPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_SKILLS);
 const resumePlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_RESUME);
 const lightPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_LIGHT);
 
+// Build the list of active plugins by filtering out any that are null (due to missing API keys)
+const activePlugins = [
+  careerPlanPlugin,
+  roadmapPlugin,
+  careerExplorationPlugin,
+  profilePlugin,
+  skillsPlugin,
+  resumePlugin,
+  lightPlugin,
+].filter(p => p !== null);
+
 // This is the main AI plugin configuration.
-// We filter out any null plugins in case an API key is not set.
 export const ai = genkit({
-  plugins: [
-    careerPlanPlugin,
-    roadmapPlugin,
-    careerExplorationPlugin,
-    profilePlugin,
-    skillsPlugin,
-    resumePlugin,
-    lightPlugin,
-  ].filter(p => p !== null) as any[], // Use 'as any[]' to satisfy TypeScript
+  plugins: activePlugins as any[], // Use 'as any[]' to satisfy TypeScript
 });
 
 // The following are model definitions that reference models from the specific plugins.
