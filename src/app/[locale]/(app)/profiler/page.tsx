@@ -28,11 +28,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { BarChart, BookOpen, BrainCircuit, Users, ArrowLeft, ArrowRight, Loader2 } from 'lucide-react';
+import { BarChart, BookOpen, BrainCircuit, Users, ArrowLeft, ArrowRight, Loader2, Bot, Edit } from 'lucide-react';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import type { User as FirebaseUser } from 'firebase/auth';
+import { Slider } from '@/components/ui/slider';
 
 const interestQuestions = [
     { id: 'tech', label: 'How interested are you in building apps or working with computers?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'], category: 'Technical' },
@@ -94,6 +95,10 @@ export default function ProfilerPage() {
   const [aptitudeAnswers, setAptitudeAnswers] = useState<Record<string, string>>({});
   const [personalityAnswers, setPersonalityAnswers] = useState<Record<string, string>>({});
   
+  const [manualScores, setManualScores] = useState<Record<string, number>>({
+    'Logical': 50, 'Creative': 50, 'Analytical': 50, 'Social': 50, 'Technical': 50
+  });
+
   const [chartData, setChartData] = useState(initialChartData);
   const [strengths, setStrengths] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -127,21 +132,21 @@ export default function ProfilerPage() {
     const maxScores = { 'Logical': 0, 'Creative': 0, 'Analytical': 0, 'Social': 0, 'Technical': 0 };
 
     interestQuestions.forEach((q, i) => {
-      const answer = interestAnswers[i];
+      const answer = interestAnswers[q.id];
       const scoreValue = q.options.indexOf(answer) * 25; // Scale 0-3 to 0-75
       if(scoreValue >= 0) scores[q.category] += scoreValue;
       maxScores[q.category] += 75;
     });
 
     aptitudeQuestions.forEach((q, i) => {
-      if (aptitudeAnswers[i] === q.answer) {
+      if (aptitudeAnswers[String(i)] === q.answer) {
         scores[q.category] += 50;
       }
       maxScores[q.category] += 50;
     });
 
     personalityQuestions.forEach((q, i) => {
-      if (q.options.indexOf(personalityAnswers[i]) === 0) { // First option corresponds to category
+      if (q.options.indexOf(personalityAnswers[String(i)]) === 0) { // First option corresponds to category
           scores[q.category] += 50;
       }
       maxScores[q.category] += 50;
@@ -161,6 +166,21 @@ export default function ProfilerPage() {
     setCurrentStep(4);
   };
   
+  const calculateManualResults = () => {
+     const finalScores = Object.entries(manualScores).map(([category, score]) => ({
+      category,
+      score,
+      fullMark: 100,
+    }));
+
+    setChartData(finalScores);
+    
+    const sortedScores = [...finalScores].sort((a, b) => b.score - a.score);
+    setStrengths(sortedScores.slice(0, 3).map(s => s.category));
+
+    setCurrentStep(4);
+  }
+
   const handleSave = async () => {
     if (!currentUser) {
         toast({ variant: 'destructive', title: 'Error', description: 'You must be logged in to save your results.' });
@@ -181,9 +201,8 @@ export default function ProfilerPage() {
 
   const nextStep = () => setCurrentStep(prev => prev + 1);
   const prevStep = () => setCurrentStep(prev => prev - 1);
-  const startTest = () => setCurrentStep(1);
 
-  if (currentStep === 4) {
+  if (currentStep === 4) { // Results page
     return (
       <div className="flex flex-col gap-8">
         <div>
@@ -231,30 +250,88 @@ export default function ProfilerPage() {
     );
   }
 
-  if (currentStep === 0) {
+  if (currentStep === 0) { // Initial choice
     return (
       <div className="flex flex-col gap-8">
         <div>
           <h1 className="text-3xl font-bold font-headline">Profiler</h1>
-          <p className="text-muted-foreground">Take the test to discover your strengths and interests.</p>
+          <p className="text-muted-foreground">Discover your strengths and interests. Choose a method below.</p>
         </div>
-        <Card className="max-w-2xl mx-auto text-center">
-          <CardHeader>
-            <CardTitle>Start Your Profiler Test</CardTitle>
-            <CardDescription>
-              This short test will help us understand your aptitudes and interests to generate personalized career and education recommendations.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button size="lg" onClick={startTest}>
-              Start Test
-            </Button>
-          </CardContent>
+        <div className="grid md:grid-cols-2 gap-8">
+          <Card className="flex flex-col text-center">
+            <CardHeader>
+              <Bot className="w-12 h-12 mx-auto text-primary" />
+              <CardTitle className="mt-4">AI Profiler Test</CardTitle>
+              <CardDescription>
+                Answer a series of questions and let our AI create a detailed profile of your strengths and aptitudes.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="mt-auto">
+              <Button size="lg" onClick={() => setCurrentStep(1)} className="w-full">
+                Start AI Test
+              </Button>
+            </CardFooter>
+          </Card>
+          <Card className="flex flex-col text-center">
+            <CardHeader>
+              <Edit className="w-12 h-12 mx-auto text-primary" />
+              <CardTitle className="mt-4">Manual Setup</CardTitle>
+              <CardDescription>
+                If you already know your strengths, you can input your profile scores directly to get recommendations faster.
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="mt-auto">
+              <Button size="lg" onClick={() => setCurrentStep(5)} variant="secondary" className="w-full">
+                Manual Setup
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentStep === 5) { // Manual input
+    return (
+      <div className="flex flex-col gap-8">
+        <div>
+            <h1 className="text-3xl font-bold font-headline">Manual Profile Setup</h1>
+            <p className="text-muted-foreground">Adjust the sliders to represent your skill level in each area.</p>
+        </div>
+        <Card>
+            <CardContent className="pt-6 space-y-6">
+                {Object.keys(manualScores).map(category => (
+                    <div key={category} className="grid gap-2">
+                        <div className="flex justify-between">
+                            <Label htmlFor={category}>{category}</Label>
+                            <span className="text-sm text-muted-foreground">{manualScores[category]} / 100</span>
+                        </div>
+                        <Slider 
+                            id={category}
+                            min={0}
+                            max={100}
+                            step={1}
+                            value={[manualScores[category]]}
+                            onValueChange={([value]) => setManualScores(prev => ({ ...prev, [category]: value }))}
+                        />
+                    </div>
+                ))}
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                <Button variant="outline" onClick={() => setCurrentStep(0)}>
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Back
+                </Button>
+                <Button onClick={calculateManualResults}>
+                    Submit & View Results
+                </Button>
+            </CardFooter>
         </Card>
       </div>
     );
   }
 
+  // AI Test steps
   return (
     <div className="flex flex-col gap-8">
        <div>
@@ -279,14 +356,14 @@ export default function ProfilerPage() {
         <CardContent>
             {currentStep === 1 && (
                 <div className="space-y-6">
-                    {interestQuestions.map((q, i) => (
+                    {interestQuestions.map((q) => (
                         <div key={q.id} className="space-y-3">
-                            <Label>{i + 1}. {q.label}</Label>
-                            <RadioGroup onValueChange={(value) => handleAnswerChange('interest', `${i}`, value)} value={interestAnswers[i]}>
+                            <Label>{q.label}</Label>
+                            <RadioGroup onValueChange={(value) => handleAnswerChange('interest', q.id, value)} value={interestAnswers[q.id]}>
                                 {q.options.map(opt => (
                                     <div key={opt} className="flex items-center space-x-2">
-                                        <RadioGroupItem value={opt} id={`iq${i}-${opt}`} />
-                                        <Label htmlFor={`iq${i}-${opt}`}>{opt}</Label>
+                                        <RadioGroupItem value={opt} id={`${q.id}-${opt}`} />
+                                        <Label htmlFor={`${q.id}-${opt}`}>{opt}</Label>
                                     </div>
                                 ))}
                             </RadioGroup>
