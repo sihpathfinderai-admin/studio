@@ -2,47 +2,113 @@
 
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
-import {config} from 'dotenv';
-config();
+import {definePrompt, PromptAction} from 'genkit';
+import type {PromptOptions} from 'genkit';
+import {z} from 'zod';
 
-// Helper function to create a configured Google AI plugin
-const createGoogleAIPlugin = (apiKey: string | undefined) => {
-  if (!apiKey) return null;
-  return googleAI({apiKey});
-};
+//
+// API Key Setup
+//
+const apiKey =
+  process.env.GEMINI_API_KEY_FALLBACK || process.env.GEMINI_API_KEY;
+if (!apiKey) {
+  throw new Error(
+    'GEMINI_API_KEY or GEMINI_API_KEY_FALLBACK environment variable not set'
+  );
+}
 
-// Create separate plugin instances for each API key
-const careerPlanPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_CAREER_PLAN);
-const roadmapPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_ROADMAP);
-const careerExplorationPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_CAREER_EXPLORATION);
-const profilePlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_PROFILE);
-const skillsPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_SKILLS);
-const resumePlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_RESUME);
-const lightPlugin = createGoogleAIPlugin(process.env.GEMINI_API_KEY_LIGHT);
+//
+// Ordered by speed and free quota generosity
+//
+const MODELS = [
+  'googleai/gemini-2.5-flash-lite', // 1,000/day
+  'googleai/gemini-2.0-flash-lite', // 200/day
+  'googleai/gemini-2.5-flash', // 250/day
+  'googleai/gemini-2.0-flash', // 200/day
+  'googleai/gemini-2.5-pro', // 100/day
+];
 
-// Build the list of active plugins by filtering out any that are null (due to missing API keys)
-const activePlugins = [
-  careerPlanPlugin,
-  roadmapPlugin,
-  careerExplorationPlugin,
-  profilePlugin,
-  skillsPlugin,
-  resumePlugin,
-  lightPlugin,
-].filter(p => p !== null);
+let currentModelIndex = 0;
 
-// This is the main AI plugin configuration.
+//
+// Base AI client
+//
 export const ai = genkit({
-  plugins: activePlugins as any[], // Use 'as any[]' to satisfy TypeScript
+  plugins: [googleAI({apiKey})],
+  model: MODELS[0], // default, overridden dynamically
 });
 
-// The following are model definitions that reference models from the specific plugins.
-// This is the correct way to create model aliases in Genkit v1.x with different API keys.
+//
+// Round-robin model selector
+//
+function getNextModel() {
+  const model = MODELS[currentModelIndex % MODELS.length];
+  currentModelIndex++;
+  return model;
+}
 
-export const careerPlanModel = careerPlanPlugin ? careerPlanPlugin.model('gemini-2.5-pro') : undefined;
-export const roadmapModel = roadmapPlugin ? roadmapPlugin.model('gemini-2.5-pro') : undefined;
-export const careerExplorationModel = careerExplorationPlugin ? careerExplorationPlugin.model('gemini-2.5-pro') : undefined;
-export const profileAnalysisModel = profilePlugin ? profilePlugin.model('gemini-2.5-flash') : undefined;
-export const skillsModel = skillsPlugin ? skillsPlugin.model('gemini-2.5-flash') : undefined;
-export const resumeModel = resumePlugin ? resumePlugin.model('gemini-2.5-pro') : undefined;
-export const lightModel = lightPlugin ? lightPlugin.model('gemini-2.5-flash') : undefined;
+//
+// Custom prompt wrapper with:
+//  - Round-robin load balancing
+//  - Automatic fallback on quota/500 errors
+//  - Null-safety for inputs
+//
+export function definePromptWithFallback<
+  I extends z.ZodTypeAny,
+  O extends z.ZodTypeAny,
+>(options: PromptOptions<I, O>): PromptAction<I, O> {
+  return async (input, promptOptions) => {
+    if (input == null) {
+      throw new Error(
+        `❌ Prompt input cannot be null. Expected: ${options.input}`
+      );
+    }
+
+    let attempts = 0;
+
+    while (attempts < MODELS.length) {
+      const model = getNextModel();
+      const dynamicPrompt = ai.definePrompt({...options, model});
+
+      try {
+        console.log(`🟢 Using model: ${model}`);
+        return await dynamicPrompt(input, promptOptions);
+      } catch (err: any) {
+        const isRetryableError =
+          (err.status && (err.status === 429 || err.status >= 500)) ||
+          (err.code && err.code === 'quota_exceeded') ||
+          (err.message &&
+            (err.message.includes('429') ||
+              err.message.includes('quota') ||
+              err.message.includes('500')));
+
+        if (isRetryableError) {
+          console.warn(
+            `⚠️ Retryable error for ${model} (Status: ${
+              err.status || 'N/A'
+            }). Trying next model...`
+          );
+          attempts++;
+        } else {
+          console.error('❌ Non-retryable error:', err);
+          throw err;
+        }
+      }
+    }
+
+    throw new Error(
+      '🚨 All Gemini models failed or exceeded free tier quota for today.'
+    );
+  };
+}
+
+// These exports are now obsolete with the new fallback logic,
+// but we keep them to avoid breaking other files.
+// They will now all use the same fallback mechanism.
+export const careerPlanModel = 'googleai/gemini-2.5-pro';
+export const roadmapModel = 'googleai/gemini-2.5-pro';
+export const careerExplorationModel = 'googleai/gemini-2.5-pro';
+export const profileAnalysisModel = 'googleai/gemini-2.5-flash';
+export const skillsModel = 'googleai/gemini-2.5-flash';
+export const resumeModel = 'googleai/gemini-2.5-pro';
+export const lightModel = 'googleai/gemini-2.5-flash';
