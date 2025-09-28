@@ -19,7 +19,8 @@ import {
   Users,
   User,
   BookCopy,
-  WifiOff
+  WifiOff,
+  Radar
 } from 'lucide-react';
 
 export type NavLink = {
@@ -90,6 +91,12 @@ export const navLinks: NavLink[] = [
     href: '/skill-tracker',
     label: 'Skill Tracker',
     icon: ListChecks,
+    roles: ['student'],
+  },
+   {
+    href: '/futureskills',
+    label: 'Future Skills Radar',
+    icon: Radar,
     roles: ['student'],
   },
   {
