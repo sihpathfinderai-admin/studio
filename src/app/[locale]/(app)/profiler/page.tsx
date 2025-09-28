@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -235,7 +233,7 @@ export default function ProfilerPage() {
     if(result.message === 'success' && result.data?.questions) {
       setAptitudeQuestions(result.data.questions);
     } else {
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not load aptitude questions. Please try again later.' });
+      toast({ variant: 'destructive', title: 'Error', description: result.message || 'Could not load aptitude questions. Please try again later.' });
       setCurrentStep(0);
     }
     setLoadingQuestions(false);
@@ -537,6 +535,3 @@ export default function ProfilerPage() {
     </div>
   );
 }
-
-
-    

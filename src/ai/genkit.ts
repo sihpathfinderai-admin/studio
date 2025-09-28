@@ -1,69 +1,47 @@
-
-import * as genkit from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
-import {config} from 'dotenv';
+import { genkit } from 'genkit';
+import { googleAI } from '@genkit-ai/googleai';
+import { config } from 'dotenv';
 config();
 
-const modelChain = {
-  models: [
-    googleAI.model('gemini-2.5-flash'),
-    googleAI.model('gemini-2.5-pro'),
-  ],
-  temperature: 0.5,
-};
+// This is the main AI plugin configuration.
+export const ai = genkit({
+  plugins: [googleAI()],
+});
+
+// The following are model definitions that use specific API keys.
+// This is the correct way to create model aliases in Genkit v1.x.
 
 // API Key 1: AI Career Plan Generator (heavy)
-export const careerPlanModel = genkit.lookupModel(modelChain, {
-  label: 'Career Plan Model',
-  apiKey: process.env.GEMINI_API_KEY_CAREER_PLAN,
+export const careerPlanModel = googleAI.model('gemini-2.5-pro', {
+  clientOptions: { apiKey: process.env.GEMINI_API_KEY_CAREER_PLAN },
 });
 
 // API Key 2: Roadmap Generator (heavy)
-export const roadmapModel = genkit.lookupModel(modelChain, {
-  label: 'Roadmap Model',
-  apiKey: process.env.GEMINI_API_KEY_ROADMAP,
+export const roadmapModel = googleAI.model('gemini-2.5-pro', {
+  clientOptions: { apiKey: process.env.GEMINI_API_KEY_ROADMAP },
 });
 
 // API Key 3: Career Exploration (heavy)
-export const careerExplorationModel = genkit.lookupModel(modelChain, {
-  label: 'Career Exploration Model',
-  apiKey: process.env.GEMINI_API_KEY_CAREER_EXPLORATION,
+export const careerExplorationModel = googleAI.model('gemini-2.5-pro', {
+  clientOptions: { apiKey: process.env.GEMINI_API_KEY_CAREER_EXPLORATION },
 });
 
 // API Key 4: Profiler, Stream Suggestion, Degree Recommendation (medium group)
-export const profileAnalysisModel = genkit.lookupModel(modelChain, {
-  label: 'Profile Analysis Model',
-  apiKey: process.env.GEMINI_API_KEY_PROFILE,
+export const profileAnalysisModel = googleAI.model('gemini-2.5-flash', {
+  clientOptions: { apiKey: process.env.GEMINI_API_KEY_PROFILE },
 });
 
 // API Key 5: Skill Tracker + Future Skills Radar (medium group)
-export const skillsModel = genkit.lookupModel(modelChain, {
-  label: 'Skills Model',
-  apiKey: process.env.GEMINI_API_KEY_SKILLS,
+export const skillsModel = googleAI.model('gemini-2.5-flash', {
+  clientOptions: { apiKey: process.env.GEMINI_API_KEY_SKILLS },
 });
 
 // API Key 6: Resume & Portfolio Builder (medium-heavy)
-export const resumeModel = genkit.lookupModel(modelChain, {
-  label: 'Resume Model',
-  apiKey: process.env.GEMINI_API_KEY_RESUME,
+export const resumeModel = googleAI.model('gemini-2.5-pro', {
+  clientOptions: { apiKey: process.env.GEMINI_API_KEY_RESUME },
 });
 
 // API Key 7: All light/non-AI tools
-export const lightModel = genkit.lookupModel(modelChain, {
-  label: 'Lightweight Model',
-  apiKey: process.env.GEMINI_API_KEY_LIGHT,
-});
-
-export const ai = genkit.genkit({
-  plugins: [googleAI()],
-  models: [
-    careerPlanModel,
-    roadmapModel,
-    careerExplorationModel,
-    profileAnalysisModel,
-    skillsModel,
-    resumeModel,
-    lightModel,
-  ],
-  model: lightModel, // Use a default for simplicity, like the light model.
+export const lightModel = googleAI.model('gemini-2.5-flash', {
+  clientOptions: { apiKey: process.env.GEMINI_API_KEY_LIGHT },
 });

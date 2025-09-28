@@ -1,6 +1,6 @@
 'use server';
 
-import { generateAptitudeQuestions, AptitudeQuestionsOutput } from "@/ai/flows/generate-aptitude-questions";
+import { generateAptitudeQuestions, AptitudeQuestionsOutput } from "@/ai-flows/generate-aptitude-questions";
 
 export type ActionState = {
     message: string;
