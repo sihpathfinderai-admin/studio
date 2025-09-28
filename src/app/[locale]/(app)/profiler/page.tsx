@@ -15,7 +15,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Slider } from '@/components/ui/slider';
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -32,11 +31,11 @@ import {
 import { BarChart, BookOpen, BrainCircuit, Users, ArrowLeft, ArrowRight } from 'lucide-react';
 
 const interestQuestions = [
-    { id: 'tech', label: 'Building apps or working with computers' },
-    { id: 'science', label: 'Exploring scientific concepts and doing experiments' },
-    { id: 'creative', label: 'Designing, drawing, or writing stories' },
-    { id: 'business', label: 'Learning about businesses and how they run' },
-    { id: 'helping', label: 'Working with people and helping others' },
+    { id: 'tech', label: 'How interested are you in building apps or working with computers?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'] },
+    { id: 'science', label: 'How interested are you in exploring scientific concepts and doing experiments?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'] },
+    { id: 'creative', label: 'How interested are you in designing, drawing, or writing stories?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'] },
+    { id: 'business', label: 'How interested are you in learning about businesses and how they run?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'] },
+    { id: 'helping', label: 'How interested are you in working with people and helping others?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'] },
 ];
 
 const aptitudeQuestions = [
@@ -189,15 +188,18 @@ export default function ProfilerPage() {
         </CardHeader>
         <CardContent>
             {currentStep === 1 && (
-                <div className="space-y-8">
-                    {interestQuestions.map((q) => (
+                <div className="space-y-6">
+                    {interestQuestions.map((q, i) => (
                         <div key={q.id} className="space-y-3">
-                            <Label>How interested are you in: <span className="font-medium">{q.label}</span></Label>
-                            <div className="flex gap-4 items-center">
-                                <span className="text-sm text-muted-foreground">Not at all</span>
-                                <Slider defaultValue={[50]} max={100} step={1} onValueChange={handleInteraction}/>
-                                <span className="text-sm text-muted-foreground">Very Interested</span>
-                            </div>
+                            <Label>{i + 1}. {q.label}</Label>
+                            <RadioGroup onValueChange={handleInteraction}>
+                                {q.options.map(opt => (
+                                    <div key={opt} className="flex items-center space-x-2">
+                                        <RadioGroupItem value={opt} id={`iq${i}-${opt}`} />
+                                        <Label htmlFor={`iq${i}-${opt}`}>{opt}</Label>
+                                    </div>
+                                ))}
+                            </RadioGroup>
                         </div>
                     ))}
                 </div>
