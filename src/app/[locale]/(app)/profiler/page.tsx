@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -7,6 +8,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -14,7 +16,6 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -28,31 +29,38 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { BarChart, BookOpen, BrainCircuit, Users } from 'lucide-react';
+import { BarChart, BookOpen, BrainCircuit, Users, ArrowLeft, ArrowRight } from 'lucide-react';
+
+const interestQuestions = [
+    { id: 'tech', label: 'Building apps or working with computers' },
+    { id: 'science', label: 'Exploring scientific concepts and doing experiments' },
+    { id: 'creative', label: 'Designing, drawing, or writing stories' },
+    { id: 'business', label: 'Learning about businesses and how they run' },
+    { id: 'helping', label: 'Working with people and helping others' },
+];
 
 const aptitudeQuestions = [
   {
-    question: 'If a car travels at 60 km/h, how far will it travel in 2.5 hours?',
-    options: ['120 km', '150 km', '180 km', '200 km'],
-    answer: '150 km',
+    question: 'A train travels 120 km in 2 hours. What is its speed in km/h?',
+    options: ['50 km/h', '60 km/h', '70 km/h', '80 km/h'],
+    answer: '60 km/h',
   },
   {
-    question: 'Which number comes next in the series: 2, 4, 8, 16, ...?',
-    options: ['24', '32', '48', '64'],
-    answer: '32',
+    question: 'Find the next number in the series: 5, 10, 15, 20, ...?',
+    options: ['25', '30', '35', '40'],
+    answer: '25',
   },
-];
-
-const interestQuestions = [
-    { id: 'arts', label: 'Creating or appreciating art and design' },
-    { id: 'science', label: 'Conducting experiments and scientific inquiry' },
-    { id: 'tech', label: 'Working with computers and technology' },
-    { id: 'business', label: 'Managing projects and leading teams' },
+  {
+    question: 'If a book costs ₹80 after a 20% discount, what was its original price?',
+    options: ['₹96', '₹100', '₹110', '₹120'],
+    answer: '₹100'
+  }
 ];
 
 const personalityQuestions = [
-    { question: 'When working on a project, you prefer to:', options: ['Work alone', 'Work in a team'] },
-    { question: 'When faced with a difficult problem, you:', options: ['Follow a known approach', 'Experiment with new ideas'] },
+    { question: 'When starting a new project, do you prefer to:', options: ['Plan everything in detail first', 'Jump in and figure it out as you go'] },
+    { question: 'Do you enjoy group discussions and debates more, or quiet, focused work?', options: ['Group discussions', 'Quiet, focused work'] },
+    { question: 'When solving a problem, do you usually trust:', options: ['Proven methods that have worked before', 'New, creative, or unconventional ideas'] },
 ];
 
 const chartData = [
@@ -72,8 +80,7 @@ const chartConfig = {
 
 
 export default function ProfilerPage() {
-  const [testStarted, setTestStarted] = useState(false);
-  const [testSubmitted, setTestSubmitted] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0); // 0: Start, 1: Interests, 2: Aptitude, 3: Personality, 4: Results
   const [progress, setProgress] = useState(0);
 
   const totalQuestions = aptitudeQuestions.length + interestQuestions.length + personalityQuestions.length;
@@ -82,7 +89,12 @@ export default function ProfilerPage() {
     setProgress(prev => Math.min(prev + (100 / totalQuestions), 100));
   }
 
-  if (testSubmitted) {
+  const nextStep = () => setCurrentStep(prev => prev + 1);
+  const prevStep = () => setCurrentStep(prev => prev - 1);
+  const startTest = () => setCurrentStep(1);
+  const viewResults = () => setCurrentStep(4);
+
+  if (currentStep === 4) {
     return (
       <div className="flex flex-col gap-8">
         <div>
@@ -130,7 +142,7 @@ export default function ProfilerPage() {
     );
   }
 
-  if (!testStarted) {
+  if (currentStep === 0) {
     return (
       <div className="flex flex-col gap-8">
         <div>
@@ -141,11 +153,11 @@ export default function ProfilerPage() {
           <CardHeader>
             <CardTitle>Start Your Profiler Test</CardTitle>
             <CardDescription>
-              This test will help us understand your aptitudes, interests, and personality. Your results will be used to generate personalized career and education recommendations.
+              This short test will help us understand your aptitudes and interests to generate personalized career and education recommendations.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button size="lg" onClick={() => setTestStarted(true)}>
+            <Button size="lg" onClick={startTest}>
               Start Test
             </Button>
           </CardContent>
@@ -164,17 +176,34 @@ export default function ProfilerPage() {
       <Card>
         <CardHeader>
             <Progress value={progress} className="mb-4"/>
-            <CardTitle>Complete the Sections</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+                {currentStep === 1 && <><BookOpen /> Interests</>}
+                {currentStep === 2 && <><BrainCircuit /> Aptitude</>}
+                {currentStep === 3 && <><Users /> Personality</>}
+            </CardTitle>
+            <CardDescription>
+                {currentStep === 1 && "Rate your interest in the following areas to help us understand what you enjoy."}
+                {currentStep === 2 && "Answer these questions to assess your logical and numerical reasoning."}
+                {currentStep === 3 && "These questions will help us understand your work style and preferences."}
+            </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="aptitude" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="aptitude"><BrainCircuit className="mr-2"/>Aptitude</TabsTrigger>
-              <TabsTrigger value="interests"><BookOpen className="mr-2"/>Interests</TabsTrigger>
-              <TabsTrigger value="personality"><Users className="mr-2"/>Personality</TabsTrigger>
-            </TabsList>
-            <TabsContent value="aptitude" className="pt-6">
-                <div className="space-y-6">
+            {currentStep === 1 && (
+                <div className="space-y-8">
+                    {interestQuestions.map((q) => (
+                        <div key={q.id} className="space-y-3">
+                            <Label>How interested are you in: <span className="font-medium">{q.label}</span></Label>
+                            <div className="flex gap-4 items-center">
+                                <span className="text-sm text-muted-foreground">Not at all</span>
+                                <Slider defaultValue={[50]} max={100} step={1} onValueChange={handleInteraction}/>
+                                <span className="text-sm text-muted-foreground">Very Interested</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+            {currentStep === 2 && (
+                 <div className="space-y-6">
                     {aptitudeQuestions.map((q, i) => (
                         <div key={i} className="space-y-3">
                             <Label>{i + 1}. {q.question}</Label>
@@ -189,23 +218,9 @@ export default function ProfilerPage() {
                         </div>
                     ))}
                 </div>
-            </TabsContent>
-            <TabsContent value="interests" className="pt-6">
-                 <div className="space-y-8">
-                    {interestQuestions.map((q) => (
-                        <div key={q.id} className="space-y-3">
-                            <Label>Rate your interest in: <span className="font-medium">{q.label}</span></Label>
-                            <div className="flex gap-4 items-center">
-                                <span className="text-sm text-muted-foreground">Low</span>
-                                <Slider defaultValue={[50]} max={100} step={1} onValueChange={handleInteraction}/>
-                                <span className="text-sm text-muted-foreground">High</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </TabsContent>
-            <TabsContent value="personality" className="pt-6">
-                 <div className="space-y-6">
+            )}
+            {currentStep === 3 && (
+                <div className="space-y-6">
                     {personalityQuestions.map((q, i) => (
                         <div key={i} className="space-y-3">
                             <Label>{i + 1}. {q.question}</Label>
@@ -220,17 +235,25 @@ export default function ProfilerPage() {
                         </div>
                     ))}
                 </div>
-            </TabsContent>
-          </Tabs>
+            )}
         </CardContent>
+         <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={prevStep} disabled={currentStep <= 1}>
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Previous
+            </Button>
+            {currentStep < 3 ? (
+                 <Button onClick={nextStep}>
+                    Next
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+            ) : (
+                <Button onClick={viewResults} disabled={progress < 100}>
+                    Submit & View Results
+                </Button>
+            )}
+        </CardFooter>
       </Card>
-      
-      <div className="flex justify-end">
-          <Button size="lg" onClick={() => setTestSubmitted(true)} disabled={progress < 100}>
-            Submit & View Results
-          </Button>
-      </div>
-
     </div>
   );
 }
