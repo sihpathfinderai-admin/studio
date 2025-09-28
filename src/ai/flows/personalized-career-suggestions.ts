@@ -12,8 +12,13 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const PersonalizedCareerSuggestionsInputSchema = z.object({
-  profileData: z.string().describe('The user profile data including interests, skills, and academic background.'),
+  strengths: z.array(z.string()).describe("The user's top strengths (e.g., Analytical, Creative)."),
+  profileChartData: z.array(z.object({
+    category: z.string(),
+    score: z.number(),
+  })).describe("The user's detailed profiler scores across different categories."),
   preferences: z.string().describe('The user preferences for learning resources, colleges, degrees, and streams.'),
+  interests: z.string().optional().describe('User-provided text about their interests and skills.'),
 });
 export type PersonalizedCareerSuggestionsInput = z.infer<typeof PersonalizedCareerSuggestionsInputSchema>;
 
@@ -33,24 +38,29 @@ const prompt = ai.definePrompt({
   name: 'personalizedCareerSuggestionsPrompt',
   input: {schema: PersonalizedCareerSuggestionsInputSchema},
   output: {schema: PersonalizedCareerSuggestionsOutputSchema},
-  prompt: `You are an AI-powered career advisor. Analyze the provided profile data and preferences to provide personalized suggestions for learning resources, colleges, degrees, and streams.
+  prompt: `You are an AI-powered career advisor. Analyze the provided user profile data and preferences to provide personalized suggestions for learning resources, colleges, degrees, and streams.
 
-Profile Data: {{{profileData}}}
-Preferences: {{{preferences}}}
+User's Top Strengths:
+{{#each strengths}}
+- {{this}}
+{{/each}}
 
-Based on this information, provide personalized suggestions for:
+User's Detailed Profile Scores:
+{{#each profileChartData}}
+- {{category}}: {{score}}/100
+{{/each}}
 
-Learning Resources:
-{{{learningResources}}}
+User's Stated Interests:
+{{{interests}}}
 
-Colleges:
-{{{colleges}}}
+User's Stated Preferences:
+{{{preferences}}}
 
-Degrees:
-{{{degrees}}}
-
-Streams:
-{{{streams}}}`, 
+Based on all this information, provide comprehensive and personalized suggestions for:
+- Learning Resources
+- Colleges
+- Degrees
+- Streams`, 
 });
 
 const personalizedCareerSuggestionsFlow = ai.defineFlow(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { getSuggestions, type FormState } from "./actions";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Library, GraduationCap, Network, Building, Loader2 } from "lucide-react";
+import { Bot, Library, GraduationCap, Network, Building, Loader2, User } from "lucide-react";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -59,10 +63,39 @@ function ResultsDisplay({ data }: { data: FormState['data'] }) {
     )
 }
 
+type ProfilerData = {
+    chartData: { category: string; score: number }[];
+    strengths: string[];
+} | null;
+
 export function AiAdvisorClient() {
   const { toast } = useToast();
   const initialState: FormState = { message: "" };
   const [state, formAction] = useActionState(getSuggestions, initialState);
+  const [profilerData, setProfilerData] = useState<ProfilerData>(null);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+
+  const [interests, setInterests] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists() && userDoc.data().profilerResults) {
+                const results = userDoc.data().profilerResults;
+                setProfilerData(results);
+
+                const profileSummary = `My top strengths are ${results.strengths.join(', ')}. My profile scores are: ${results.chartData.map(d => `${d.category}: ${d.score}`).join(', ')}.`;
+                setInterests(prev => `${profileSummary}\n\nI'm also interested in: `);
+            } else {
+                setProfilerData(null);
+            }
+        }
+        setLoadingProfile(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (state.message && state.message !== "success") {
@@ -86,32 +119,57 @@ export function AiAdvisorClient() {
       <Card>
         <CardHeader>
             <CardTitle>Your Information</CardTitle>
-            <CardDescription>The more detail you provide, the better the suggestions will be.</CardDescription>
+            <CardDescription>We've pre-filled your profile based on your Profiler results. Add more details for better suggestions.</CardDescription>
         </CardHeader>
         <CardContent>
-            <form action={formAction} className="space-y-6">
-                <div className="grid gap-2">
-                    <Label htmlFor="profileData">Your Profile</Label>
-                    <Textarea
-                        id="profileData"
-                        name="profileData"
-                        placeholder="Describe your interests, skills, academic background, and any projects you've worked on. e.g., 'I am interested in creative arts and technology. I have experience with Python and enjoy building small games. I am in 12th grade with a focus on computer science.'"
-                        rows={6}
-                        required
-                    />
-                </div>
-                <div className="grid gap-2">
-                    <Label htmlFor="preferences">Your Preferences</Label>
-                    <Textarea
-                        id="preferences"
-                        name="preferences"
-                        placeholder="What are you looking for? e.g., 'I prefer project-based learning, am looking for colleges in California, and am interested in Bachelor of Science degrees. I'm open to both Computer Science and Digital Media streams.'"
-                        rows={6}
-                        required
-                    />
-                </div>
-                <SubmitButton />
-            </form>
+            {loadingProfile ? (
+              <div className="space-y-4">
+                <Skeleton className="h-8 w-1/4" />
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-8 w-1/4" />
+                <Skeleton className="h-24 w-full" />
+              </div>
+            ) : (
+              <form action={formAction} className="space-y-6">
+                {profilerData && (
+                  <>
+                    <input type="hidden" name="profileChartData" value={JSON.stringify(profilerData.chartData)} />
+                    {profilerData.strengths.map(strength => (
+                      <input key={strength} type="hidden" name="strengths[]" value={strength} />
+                    ))}
+                  </>
+                )}
+                  <div className="grid gap-2">
+                      <Label htmlFor="profileData">Your Profile</Label>
+                      <Textarea
+                          id="profileData"
+                          name="profileData"
+                          placeholder="Describe your interests, skills, academic background, and any projects you've worked on. e.g., 'I am interested in creative arts and technology. I have experience with Python and enjoy building small games. I am in 12th grade with a focus on computer science.'"
+                          rows={6}
+                          value={interests}
+                          onChange={(e) => setInterests(e.target.value)}
+                          required
+                      />
+                  </div>
+                  <div className="grid gap-2">
+                      <Label htmlFor="preferences">Your Preferences</Label>
+                      <Textarea
+                          id="preferences"
+                          name="preferences"
+                          placeholder="What are you looking for? e.g., 'I prefer project-based learning, am looking for colleges in California, and am interested in Bachelor of Science degrees. I'm open to both Computer Science and Digital Media streams.'"
+                          rows={6}
+                          required
+                      />
+                  </div>
+                  {!profilerData && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted rounded-md">
+                        <User className="w-5 h-5 text-primary" />
+                        <span>Complete the <a href="/profiler" className="underline font-semibold">Profiler</a> for more personalized suggestions.</span>
+                    </div>
+                  )}
+                  <SubmitButton />
+              </form>
+            )}
         </CardContent>
       </Card>
       
