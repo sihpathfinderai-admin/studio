@@ -1,11 +1,13 @@
 
 import {genkit, lookupModel} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
+import {config} from 'dotenv';
+config();
 
 const modelChain = {
   models: [
-    googleAI.model('gemini-2.5-pro'),
     googleAI.model('gemini-2.5-flash'),
+    googleAI.model('gemini-2.5-pro'),
   ],
   temperature: 0.5,
 };
