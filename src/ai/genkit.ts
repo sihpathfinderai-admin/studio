@@ -57,7 +57,8 @@ export function definePromptWithFallback<
   O extends z.ZodTypeAny,
 >(options: PromptOptions<I, O>): PromptAction<I, O> {
   return async (input, promptOptions) => {
-    if (input == null) {
+    // This check should only apply if the prompt schema expects an input.
+    if (options.input && input == null) {
       throw new Error(
         `❌ Prompt input cannot be null. Expected: ${options.input}`
       );
@@ -71,7 +72,8 @@ export function definePromptWithFallback<
 
       try {
         console.log(`🟢 Using model: ${model}`);
-        return await dynamicPrompt(input, promptOptions);
+        // Pass input only if it's not null/undefined.
+        return await dynamicPrompt(input!, promptOptions);
       } catch (err: any) {
         const isRetryableError =
           (err.status && (err.status === 429 || err.status >= 500)) ||
