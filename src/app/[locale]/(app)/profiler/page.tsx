@@ -28,12 +28,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { BarChart, BookOpen, BrainCircuit, Users, ArrowLeft, ArrowRight, Loader2, Bot, Edit } from 'lucide-react';
+import { BarChart, BookOpen, BrainCircuit, Users, ArrowLeft, ArrowRight, Loader2, Bot, Edit, Download } from 'lucide-react';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import type { User as FirebaseUser } from 'firebase/auth';
 import { Slider } from '@/components/ui/slider';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import Link from 'next/link';
 
 const interestQuestions = [
     { id: 'tech', label: 'How interested are you in building apps or working with computers?', options: ['Not interested', 'A little interested', 'Interested', 'Very interested'], category: 'Technical' },
@@ -95,8 +98,15 @@ export default function ProfilerPage() {
   const [aptitudeAnswers, setAptitudeAnswers] = useState<Record<string, string>>({});
   const [personalityAnswers, setPersonalityAnswers] = useState<Record<string, string>>({});
   
-  const [manualScores, setManualScores] = useState<Record<string, number>>({
-    'Logical': 50, 'Creative': 50, 'Analytical': 50, 'Social': 50, 'Technical': 50
+  const [manualProfile, setManualProfile] = useState({
+      strongestSubject: '',
+      math: 3,
+      science: 3,
+      english: 3,
+      skills: '',
+      grade: '',
+      favoriteSubject: '',
+      ambition: ''
   });
 
   const [chartData, setChartData] = useState(initialChartData);
@@ -167,16 +177,41 @@ export default function ProfilerPage() {
   };
   
   const calculateManualResults = () => {
-     const finalScores = Object.entries(manualScores).map(([category, score]) => ({
+     // A simple mapping from manual inputs to profile categories
+    const scores = {
+        'Logical': manualProfile.math * 20, 
+        'Analytical': manualProfile.science * 20, 
+        'Creative': 0, // No direct input for this in the new form
+        'Social': 0, // No direct input
+        'Technical': 0 // No direct input
+    };
+
+    if (manualProfile.strongestSubject === 'Maths' || manualProfile.strongestSubject === 'Commerce') {
+        scores.Logical += 30;
+    }
+    if (manualProfile.strongestSubject === 'Science') {
+        scores.Analytical += 30;
+    }
+    if (manualProfile.strongestSubject === 'Arts') {
+        scores.Creative += 40;
+    }
+     if (manualProfile.skills.toLowerCase().includes('coding')) {
+        scores.Technical += 50;
+    }
+     if (manualProfile.skills.toLowerCase().includes('drawing') || manualProfile.skills.toLowerCase().includes('writing')) {
+        scores.Creative += 40;
+    }
+
+     const finalScores = Object.entries(scores).map(([category, score]) => ({
       category,
-      score,
+      score: Math.min(score, 100), // Cap at 100
       fullMark: 100,
     }));
 
     setChartData(finalScores);
     
     const sortedScores = [...finalScores].sort((a, b) => b.score - a.score);
-    setStrengths(sortedScores.slice(0, 3).map(s => s.category));
+    setStrengths(sortedScores.slice(0, 3).map(s => s.category).filter(s => s));
 
     setCurrentStep(4);
   }
@@ -206,8 +241,8 @@ export default function ProfilerPage() {
     return (
       <div className="flex flex-col gap-8">
         <div>
-          <h1 className="text-3xl font-bold font-headline">Profiler Results</h1>
-          <p className="text-muted-foreground">Here is your generated profile based on the test.</p>
+          <h1 className="text-3xl font-bold font-headline">Your Profiler Results</h1>
+          <p className="text-muted-foreground">Here is your generated profile based on your inputs.</p>
         </div>
         <Card>
           <CardHeader>
@@ -220,11 +255,12 @@ export default function ProfilerPage() {
             <div>
               <h3 className="font-semibold text-lg mb-2">Top Strengths:</h3>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                {strengths.map(strength => <li key={strength}>{strength}</li>)}
+                {strengths.length > 0 ? strengths.map(strength => <li key={strength}>{strength}</li>) : <li>No distinct strengths found.</li>}
               </ul>
-               <Button className="mt-6 w-full" onClick={handleSave} disabled={isSaving}>
-                 {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Saving...</> : 'Save to Dashboard'}
-               </Button>
+              <div className='mt-4 bg-muted p-3 rounded-md'>
+                <h4 className='font-semibold'>AI Recommendation Note:</h4>
+                <p className='text-sm text-muted-foreground'>You have strong logical skills and high interest in science and technology. You may fit well in engineering or IT-related fields.</p>
+              </div>
             </div>
             <ChartContainer config={chartConfig} className="w-full h-[300px]">
               <ResponsiveContainer>
@@ -245,6 +281,19 @@ export default function ProfilerPage() {
               </ResponsiveContainer>
             </ChartContainer>
           </CardContent>
+           <CardFooter className="flex-col sm:flex-row gap-2">
+               <Button className="w-full sm:w-auto" onClick={handleSave} disabled={isSaving}>
+                 {isSaving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Saving...</> : 'Save to Dashboard'}
+               </Button>
+               <Button asChild variant="secondary" className="w-full sm:w-auto">
+                    <Link href="/stream">Go to Stream Suggestion</Link>
+               </Button>
+                <Button variant="outline" className="w-full sm:w-auto">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download as PDF
+               </Button>
+                <Button variant="ghost" className="w-full sm:w-auto" onClick={() => setCurrentStep(0)}>Retake/Edit Profile</Button>
+           </CardFooter>
         </Card>
       </div>
     );
@@ -254,16 +303,16 @@ export default function ProfilerPage() {
     return (
       <div className="flex flex-col gap-8">
         <div>
-          <h1 className="text-3xl font-bold font-headline">Profiler</h1>
-          <p className="text-muted-foreground">Discover your strengths and interests. Choose a method below.</p>
+          <h1 className="text-3xl font-bold font-headline">Profiler – Discover Your Path</h1>
+          <p className="text-muted-foreground">Answer a few questions or set up your profile manually to begin your journey.</p>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
           <Card className="flex flex-col text-center">
             <CardHeader>
               <Bot className="w-12 h-12 mx-auto text-primary" />
-              <CardTitle className="mt-4">AI Profiler Test</CardTitle>
+              <CardTitle className="mt-4">Automated Test Mode</CardTitle>
               <CardDescription>
-                Answer a series of questions and let our AI create a detailed profile of your strengths and aptitudes.
+                This 10-15 minute test will analyze your aptitude, interests, and personality to guide your stream, degree, and career options.
               </CardDescription>
             </CardHeader>
             <CardFooter className="mt-auto">
@@ -275,7 +324,7 @@ export default function ProfilerPage() {
           <Card className="flex flex-col text-center">
             <CardHeader>
               <Edit className="w-12 h-12 mx-auto text-primary" />
-              <CardTitle className="mt-4">Manual Setup</CardTitle>
+              <CardTitle className="mt-4">Manual Setup Mode</CardTitle>
               <CardDescription>
                 If you already know your strengths, you can input your profile scores directly to get recommendations faster.
               </CardDescription>
@@ -296,26 +345,66 @@ export default function ProfilerPage() {
       <div className="flex flex-col gap-8">
         <div>
             <h1 className="text-3xl font-bold font-headline">Manual Profile Setup</h1>
-            <p className="text-muted-foreground">Adjust the sliders to represent your skill level in each area.</p>
+            <p className="text-muted-foreground">Fill in your details to generate a profile report.</p>
         </div>
         <Card>
             <CardContent className="pt-6 space-y-6">
-                {Object.keys(manualScores).map(category => (
-                    <div key={category} className="grid gap-2">
-                        <div className="flex justify-between">
-                            <Label htmlFor={category}>{category}</Label>
-                            <span className="text-sm text-muted-foreground">{manualScores[category]} / 100</span>
+                <Card>
+                    <CardHeader><CardTitle>Aptitude & Strengths</CardTitle></CardHeader>
+                    <CardContent className='space-y-4'>
+                        <div className='grid gap-2'>
+                            <Label>Select your strongest subject</Label>
+                            <RadioGroup onValueChange={(value) => setManualProfile(p => ({...p, strongestSubject: value}))} value={manualProfile.strongestSubject} className="flex flex-wrap gap-4">
+                                {['Math', 'Science', 'Arts', 'Commerce', 'Languages', 'Others'].map(sub => (
+                                    <div key={sub} className="flex items-center space-x-2">
+                                        <RadioGroupItem value={sub} id={`sub-${sub}`} />
+                                        <Label htmlFor={`sub-${sub}`}>{sub}</Label>
+                                    </div>
+                                ))}
+                            </RadioGroup>
                         </div>
-                        <Slider 
-                            id={category}
-                            min={0}
-                            max={100}
-                            step={1}
-                            value={[manualScores[category]]}
-                            onValueChange={([value]) => setManualScores(prev => ({ ...prev, [category]: value }))}
-                        />
-                    </div>
-                ))}
+                        <div className='grid gap-4 sm:grid-cols-3'>
+                             {['math', 'science', 'english'].map(subject => (
+                                <div key={subject} className="grid gap-2">
+                                    <Label>Rate yourself in {subject.charAt(0).toUpperCase() + subject.slice(1)} ({manualProfile[subject]}/5)</Label>
+                                    <Slider
+                                        min={1} max={5} step={1}
+                                        value={[manualProfile[subject]]}
+                                        onValueChange={([val]) => setManualProfile(p => ({...p, [subject]: val}))}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader><CardTitle>Current Skills</CardTitle></CardHeader>
+                    <CardContent>
+                        <Label htmlFor="skills">Enter skills you have (e.g., Coding, Writing, Drawing, Public Speaking, Sports)</Label>
+                        <Textarea id="skills" value={manualProfile.skills} onChange={e => setManualProfile(p => ({...p, skills: e.target.value}))} placeholder='e.g., Python, Graphic Design...'/>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader><CardTitle>Academic Performance</CardTitle></CardHeader>
+                    <CardContent className='grid sm:grid-cols-2 gap-4'>
+                        <div className='grid gap-2'>
+                            <Label htmlFor="grade">Enter your latest overall grade/percentage</Label>
+                            <Input id="grade" value={manualProfile.grade} onChange={e => setManualProfile(p => ({...p, grade: e.target.value}))} placeholder="e.g., 85% or A+"/>
+                        </div>
+                        <div className='grid gap-2'>
+                            <Label htmlFor="fav-subject">Favorite subject (optional)</Label>
+                            <Input id="fav-subject" value={manualProfile.favoriteSubject} onChange={e => setManualProfile(p => ({...p, favoriteSubject: e.target.value}))} placeholder="e.g., Physics"/>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                     <CardHeader><CardTitle>Ambition</CardTitle></CardHeader>
+                     <CardContent>
+                        <Label htmlFor="ambition">What do you want to become?</Label>
+                        <Input id="ambition" value={manualProfile.ambition} onChange={e => setManualProfile(p => ({...p, ambition: e.target.value}))} placeholder="e.g., Software Developer, Doctor, Designer..."/>
+                     </CardContent>
+                </Card>
+
             </CardContent>
             <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={() => setCurrentStep(0)}>
@@ -323,7 +412,7 @@ export default function ProfilerPage() {
                     Back
                 </Button>
                 <Button onClick={calculateManualResults}>
-                    Submit & View Results
+                    Generate Profile Report
                 </Button>
             </CardFooter>
         </Card>
@@ -418,7 +507,7 @@ export default function ProfilerPage() {
                 </Button>
             ) : (
                 <Button onClick={calculateResults} disabled={progress < 100}>
-                    Submit & View Results
+                    Finish & Analyze
                 </Button>
             )}
         </CardFooter>
@@ -426,3 +515,6 @@ export default function ProfilerPage() {
     </div>
   );
 }
+
+
+    
