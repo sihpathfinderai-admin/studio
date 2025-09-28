@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { skillsModel } from '../genkit';
 
 const FutureSkillsInputSchema = z.object({
   careerPath: z.string().describe('The chosen career or degree path of the student.'),
@@ -41,7 +42,8 @@ Based on this career path, provide the following:
 - A list of valuable certifications with the issuing authority.
 - A list of trending technologies and tools with brief descriptions.
 - A concise, actionable skill upgrade path to stay ahead of automation.
-`, 
+`,
+  model: skillsModel,
 });
 
 const futureSkillsFlow = ai.defineFlow(
