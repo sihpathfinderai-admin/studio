@@ -101,14 +101,3 @@ export function definePromptWithFallback<
     );
   };
 }
-
-// These exports are now obsolete with the new fallback logic,
-// but we keep them to avoid breaking other files.
-// They will now all use the same fallback mechanism.
-export const careerPlanModel = 'googleai/gemini-2.5-pro';
-export const roadmapModel = 'googleai/gemini-2.5-pro';
-export const careerExplorationModel = 'googleai/gemini-2.5-pro';
-export const profileAnalysisModel = 'googleai/gemini-2.5-flash';
-export const skillsModel = 'googleai/gemini-2.5-flash';
-export const resumeModel = 'googleai/gemini-2.5-pro';
-export const lightModel = 'googleai/gemini-2.5-flash';
