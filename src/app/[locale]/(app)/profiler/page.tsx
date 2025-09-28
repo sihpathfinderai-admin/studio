@@ -107,10 +107,10 @@ export default function ProfilerPage() {
 
   const totalQuestions = aptitudeQuestions.length + interestQuestions.length + personalityQuestions.length;
   
-  const updateProgress = () => {
+  useEffect(() => {
     const answeredCount = Object.keys(interestAnswers).length + Object.keys(aptitudeAnswers).length + Object.keys(personalityAnswers).length;
     setProgress(Math.min((answeredCount / totalQuestions) * 100, 100));
-  }
+  }, [interestAnswers, aptitudeAnswers, personalityAnswers, totalQuestions]);
 
   const handleAnswerChange = (section: 'interest' | 'aptitude' | 'personality', questionId: string, value: string) => {
     if (section === 'interest') {
@@ -120,8 +120,6 @@ export default function ProfilerPage() {
     } else {
       setPersonalityAnswers(prev => ({...prev, [questionId]: value}));
     }
-    // Defer progress update to next tick to ensure state is updated
-    setTimeout(updateProgress, 0);
   };
   
   const calculateResults = () => {
