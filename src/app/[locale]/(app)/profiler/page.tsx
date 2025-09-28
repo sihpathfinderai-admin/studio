@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -87,6 +88,7 @@ export default function ProfilerPage() {
   
   const [aptitudeQuestions, setAptitudeQuestions] = useState<AptitudeQuestion[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [currentAptitudeQuestionIndex, setCurrentAptitudeQuestionIndex] = useState(0);
 
   const [manualProfile, setManualProfile] = useState({
       strongestSubject: '',
@@ -444,7 +446,7 @@ export default function ProfilerPage() {
             </CardTitle>
             <CardDescription>
                 {currentStep === 1 && "Rate your interest in the following areas to help us understand what you enjoy."}
-                {currentStep === 2 && "Answer these questions to assess your logical and numerical reasoning."}
+                {currentStep === 2 && (loadingQuestions ? "Loading questions..." : `Question ${currentAptitudeQuestionIndex + 1} of ${aptitudeQuestions.length}`)}
                 {currentStep === 3 && "These questions will help us understand your work style and preferences."}
             </CardDescription>
         </CardHeader>
@@ -481,19 +483,41 @@ export default function ProfilerPage() {
                           </div>
                         ))
                     ) : (
-                        aptitudeQuestions.map((q, i) => (
-                            <div key={i} className="space-y-3">
-                                <Label>{i + 1}. {q.question}</Label>
-                                <RadioGroup onValueChange={(value) => handleAnswerChange('aptitude', `${i}`, value)} value={aptitudeAnswers[i]}>
-                                    {q.options.map(opt => (
-                                        <div key={opt} className="flex items-center space-x-2">
-                                            <RadioGroupItem value={opt} id={`q${i}-${opt}`} />
-                                            <Label htmlFor={`q${i}-${opt}`}>{opt}</Label>
-                                        </div>
-                                    ))}
-                                </RadioGroup>
-                            </div>
-                        ))
+                        aptitudeQuestions.length > 0 &&
+                        (() => {
+                            const q = aptitudeQuestions[currentAptitudeQuestionIndex];
+                            const i = currentAptitudeQuestionIndex;
+                            return (
+                                <div>
+                                    <div key={i} className="space-y-3">
+                                        <Label>{i + 1}. {q.question}</Label>
+                                        <RadioGroup onValueChange={(value) => handleAnswerChange('aptitude', `${i}`, value)} value={aptitudeAnswers[i]}>
+                                            {q.options.map(opt => (
+                                                <div key={opt} className="flex items-center space-x-2">
+                                                    <RadioGroupItem value={opt} id={`q${i}-${opt}`} />
+                                                    <Label htmlFor={`q${i}-${opt}`}>{opt}</Label>
+                                                </div>
+                                            ))}
+                                        </RadioGroup>
+                                    </div>
+                                    <div className="flex justify-between mt-6">
+                                        <Button 
+                                            variant="outline"
+                                            onClick={() => setCurrentAptitudeQuestionIndex(p => p - 1)}
+                                            disabled={currentAptitudeQuestionIndex === 0}
+                                        >
+                                            <ArrowLeft className="mr-2 h-4 w-4" /> Previous
+                                        </Button>
+                                        <Button 
+                                            onClick={() => setCurrentAptitudeQuestionIndex(p => p + 1)}
+                                            disabled={currentAptitudeQuestionIndex === aptitudeQuestions.length - 1}
+                                        >
+                                            Next <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })()
                     )}
                 </div>
             )}
@@ -518,11 +542,11 @@ export default function ProfilerPage() {
          <CardFooter className="flex justify-between">
             <Button variant="outline" onClick={prevStep} disabled={currentStep <= 1}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Previous
+                Previous Section
             </Button>
             {currentStep < 3 ? (
                  <Button onClick={nextStep}>
-                    Next
+                    Next Section
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
             ) : (
@@ -535,3 +559,5 @@ export default function ProfilerPage() {
     </div>
   );
 }
+
+    
