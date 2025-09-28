@@ -1,3 +1,4 @@
+
 'use server';
 
 import { generateAptitudeQuestions, AptitudeQuestionsOutput } from "@/ai-flows/generate-aptitude-questions";
@@ -14,10 +15,10 @@ export async function getAptitudeQuestions(): Promise<ActionState> {
             message: 'success',
             data: result
         }
-    } catch(error) {
+    } catch(error: any) {
         console.error(error);
         return {
-            message: 'Failed to generate aptitude questions. Please try again.'
+            message: `Failed to generate aptitude questions: ${error.message}`
         }
     }
 }
