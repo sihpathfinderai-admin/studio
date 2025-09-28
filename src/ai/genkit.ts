@@ -9,17 +9,17 @@ import {z} from 'zod';
 // API Key Setup
 //
 const apiKeys = [
-  process.env.GEMINI_API_KEY,
-  process.env.GEMINI_API_KEY_FALLBACK,
   process.env.GEMINI_API_KEY_1,
   process.env.GEMINI_API_KEY_2,
   process.env.GEMINI_API_KEY_3,
   process.env.GEMINI_API_KEY_4,
   process.env.GEMINI_API_KEY_5,
-].filter((k): k is string => !!k);
+  process.env.GEMINI_API_KEY_6,
+  process.env.GEMINI_API_KEY_7,
+].filter((k): k is string => !!k && k.length > 5 && !k.startsWith('YOUR_API_KEY'));
 
 if (apiKeys.length === 0) {
-  throw new Error('No GEMINI_API_KEY environment variables found.');
+  throw new Error('No valid GEMINI_API_KEY environment variables found. Please check your .env file.');
 }
 
 //
